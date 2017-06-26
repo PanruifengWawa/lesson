@@ -225,7 +225,7 @@ public class UserServiceImpl implements UserService {
 	public DataWrapper<List<User>> getUserList(Integer numberPerPage, Integer currentPage) {
 		// TODO Auto-generated method stub
 		Pageable pageable = null;
-		if (numberPerPage == null || numberPerPage <= 0 || numberPerPage > 20) {
+		if (numberPerPage == null || numberPerPage <= 0 || numberPerPage > 10) {
 			numberPerPage = 10;
 		}
 		if (currentPage == null || currentPage <= 0) {

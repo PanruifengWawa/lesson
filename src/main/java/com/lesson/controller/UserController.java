@@ -370,7 +370,7 @@ public class UserController {
 	* @apiGroup user
 	* 
 	* @apiHeader {String} token 身份凭证
-	* @apiParam {int} numberPerPage * 每页大小（非必须）
+	* @apiParam {int} numberPerPage * 每页大小（非必须,最大10）
 	* @apiParam {int} currentPage * 当前页（非必须）
 	*
 	* @apiSuccessExample {json} Success-Response:
