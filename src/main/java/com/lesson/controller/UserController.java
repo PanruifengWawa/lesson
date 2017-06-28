@@ -524,5 +524,66 @@ public class UserController {
 	
 	
 	
+	/**
+	* @api {get} api/user/{userId} 获取用户详情（管理员）
+	* @apiName user_getUserDetails_from_admin
+	* @apiGroup user
+	* 
+	* @apiHeader {String} token 身份凭证
+	* @apiParam {Long} userId * 用户id（必须）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": {
+    *			"userId": 1,
+    *			"phone": "13761463756",
+    *			"password": null,
+    *			"nickName": "大潘",
+    *			"gender": "F",
+    *			"birthday": 751219200000,
+    *			"city": "上海",
+    *			"type": 1,
+    *			"headSrc": null,
+    *			"note": null,
+    *			"parent": "妈妈",
+    *			"registerDate": 1222222
+    *		},
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{userId}", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<User> getUserDetails(
+			@PathVariable Long userId,
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = { UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		return userService.getUserDetails(userId);
+	}
+	
+	
+	
 
 }

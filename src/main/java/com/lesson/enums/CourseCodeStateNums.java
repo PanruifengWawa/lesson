@@ -1,14 +1,14 @@
 package com.lesson.enums;
 
-
-public enum CourseFreeEnum {
-	No(0,"收费课"),
-	Yes(1,"体验课")
+public enum CourseCodeStateNums {
+	No(0,"未使用"),
+	Yes(1,"已使用")
 	;
+	
 	private int code;
 	private String name;
 	
-	CourseFreeEnum(int code,String name) {
+	CourseCodeStateNums(int code,String name) {
 		this.code = code;
 		this.name = name;
 	}
@@ -29,8 +29,8 @@ public enum CourseFreeEnum {
 		this.name = name;
 	}
 	
-	public static CourseFreeEnum parse(int code) {
-        for (CourseFreeEnum theEnum : CourseFreeEnum.values()) {
+	public static CourseCodeStateNums parse(int code) {
+        for (CourseCodeStateNums theEnum : CourseCodeStateNums.values()) {
             if (theEnum.getCode() == code) {
                 return theEnum;
             }

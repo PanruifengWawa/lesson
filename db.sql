@@ -24,7 +24,7 @@ create index user_phone_index on t_user(phone);
 drop table if exists t_token;
 create table t_token(
 id serial primary key,
-token_str varchar(200) unique,
+token_str varchar(200) unique not null,
 user_id bigint(20) unsigned not null unique,
 user_type tinyint not null,
 login_date datetime,
@@ -48,7 +48,58 @@ create index course_is_free on t_course(is_free);
 create index course_type on t_course(type);
 create index course_is_free_type on t_course(is_free,type);
 
+drop table if exists t_course_arrangement;
+create table t_course_arrangement(
+course_arrangement_id serial primary key,
+img_src varchar(256) not null,
+name varchar(256) not null,
+course_id bigint(20) unsigned NOT NULL,
+foreign key(course_id) references t_course(course_id) on delete cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+drop table if exists t_course_content;
+create table t_course_content(
+course_content_id serial primary key,
+name varchar(256) not null,
+sub_name varchar(256) not null,
+content text not null,
+book_name varchar(256) not null,
+book_img_src varchar(256) not null,
+course_id bigint(20) unsigned NOT NULL,
+course_arrangement_id bigint(20) unsigned NOT NULL,
+foreign key(course_id) references t_course(course_id) on delete cascade,
+foreign key(course_arrangement_id) references t_course_arrangement(course_arrangement_id) on delete cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+drop table if exists t_course_code;
+create table t_course_code(
+course_code_id serial primary key,
+course_code_str char(32) not null unique,
+course_id bigint(20) unsigned NOT NULL,
+user_id bigint(20) unsigned NOT NULL,
+is_used tinyint not null default 0,
+use_date datetime,
+foreign key(course_id) references t_course(course_id) on delete cascade,
+foreign key(user_id) references t_user(user_id) on delete cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create index course_code_str_index on t_course_code(course_code_str);
+create index course_code_user_course_id on t_course_code(user_id, course_id);
+
+drop table if exists t_book;
+create table t_book(
+book_id serial primary key,
+book_name varchar(256) not null,
+book_img_src varchar(256) not null,
+read_date datetime not null,
+user_id bigint(20) unsigned NOT NULL,
+is_course_book tinyint not null,
+course_content_id bigint(20) unsigned,
+foreign key(user_id) references t_user(user_id) on delete cascade
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+create index book_user_course_content_index on t_book(user_id,course_content_id);
 
 INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
 

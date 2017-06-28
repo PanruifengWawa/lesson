@@ -51,7 +51,7 @@ public class Course {
 	}
 	
 	@Basic
-	@Column(name = "img_str")
+	@Column(name = "img_src")
 	public String getImgSrc() {
 		return imgSrc;
 	}

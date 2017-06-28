@@ -28,11 +28,11 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 			Integer currentPage) {
 		// TODO Auto-generated method stub
 
-		if (numberPerPage == null || numberPerPage <= 0 || numberPerPage > 10) {
-			numberPerPage = 10;
+		if (numberPerPage == null) {
+			numberPerPage = -1;
 		}
-		if (currentPage == null || currentPage <= 0) {
-			currentPage = 1;
+		if (currentPage == null) {
+			currentPage = -1;
 		}
 		List<Course> ret = null;
 		Session session = sessionFactory.getCurrentSession();
