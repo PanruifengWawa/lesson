@@ -13,7 +13,17 @@ import javax.persistence.Table;
 public class CourseContentSub {
 	private Long courseContentId;
 	private String name;
+	private String subName;
 	
+	
+	@Basic
+	@Column(name = "sub_name")
+	public String getSubName() {
+		return subName;
+	}
+	public void setSubName(String subName) {
+		this.subName = subName;
+	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_content_id")

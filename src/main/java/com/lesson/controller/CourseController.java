@@ -87,7 +87,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<Course> addCourse(
+	public DataWrapper<Course> addCourse(
 			@ModelAttribute Course course,
 			HttpServletRequest request
 			) {
@@ -117,14 +117,14 @@ public class CourseController {
   	*		"callStatus": "SUCCEED",
   	*		"errorCode": "成功",
   	*		"data": [{
-    *        		"courseId": 8,
-    *        		"name": "课程7",
-    *        		"imgSrc": "imgSrc",
-    *        		"isFree": 1,
-    *        		"type": 4,
-    *        		"createDate": 1498491339000,
-    *        		"link": "link"
-    *    	}],
+    *			"courseId": 8,
+    *			"name": "课程7",
+    *			"imgSrc": "imgSrc",
+    *			"isFree": 1,
+    *			"type": 4,
+    *			"createDate": 1498491339000,
+    *			"link": "link"
+    *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
 	*  		"currentPage": 0,
@@ -147,7 +147,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "getCourseList", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<List<Course>> getCourseList(
+	public DataWrapper<List<Course>> getCourseList(
 			@RequestParam(value = "isFree", required = false) Integer isFree,
 			@RequestParam(value = "type", required = false) Integer type,
 			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
@@ -203,7 +203,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<Void> updateCourse(
+	public DataWrapper<Void> updateCourse(
 			@PathVariable Long courseId,
 			@ModelAttribute Course course,
 			HttpServletRequest request
@@ -254,7 +254,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	DataWrapper<Void> deleteCourse(
+	public DataWrapper<Void> deleteCourse(
 			@PathVariable Long courseId,
 			HttpServletRequest request
 			) {
@@ -264,6 +264,63 @@ public class CourseController {
 		CheckUser.checkUser(token, userTypes);
 		
 		return courseService.deleteCourse(courseId);
+	}
+	
+	/**
+	* @api {get} api/course/{courseId} 获取课程详情（管理员）
+	* @apiName course_getDetails
+	* @apiGroup course
+	* @apiHeader {String} token 身份凭证
+	*
+	* @apiParam {Long} courseId * 课程id（必须）
+	* 
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": {
+    *			"courseId": 8,
+    *			"name": "课程7",
+    *			"imgSrc": "imgSrc",
+    *			"isFree": 1,
+    *			"type": 4,
+    *			"createDate": 1498491339000,
+    *			"link": "link"
+    *		},
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{courseId}", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<Course> getCourseDetails(
+			@PathVariable Long courseId,
+			HttpServletRequest request
+			) {
+		
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		return courseService.getCourseDetails(courseId);
 	}
 	
 	
@@ -314,7 +371,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "free", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<List<Course>> getFreeCourseList(
+	public DataWrapper<List<Course>> getFreeCourseList(
 			@RequestParam(value = "type", required = false) Integer type,
 			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
     		@RequestParam(value = "currentPage", required = false) Integer currentPage
@@ -323,14 +380,14 @@ public class CourseController {
 	}
 	
 	/**
-	* @api {get} api/course 获取课程列表（用户，未完成，需要跟用户购买课程关联）
+	* @api {get} api/course 获取课程列表（用户）
 	* @apiName course_user
 	* @apiGroup course
 	* 
 	* @apiHeader {String} token 身份凭证
 	*
 	* @apiParam {int} type * 课程类型（必须,1-太阳课程,2-月亮课程,3-星星课程,4-自然拼读）
-	* @apiParam {int} numberPerPage * 每页大小（非必须,1-10）
+	* @apiParam {int} numberPerPage * 每页大小（非必须,默认分页）
 	* @apiParam {int} currentPage * 当前页（非必须）
 	* 
 	*
@@ -339,7 +396,16 @@ public class CourseController {
 	* 	{
   	*		"callStatus": "SUCCEED",
   	*		"errorCode": "成功",
-  	*		"data": "未完成",
+  	*		"data": [{
+    *        			"courseId": 8,
+    *        			"name": "课程7",
+    *        			"imgSrc": "imgSrc",
+    *        			"isFree": 1,
+    *        			"type": 4,
+    *        			"createDate": 1498491339000,
+    *        			"link": "link",
+    *        			"isBought" : 1//是否已购买
+    *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
 	*  		"currentPage": 0,
@@ -362,12 +428,17 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<List<Course>> getCourseList(
+	public DataWrapper<List<Course>> getCourseList(
 			@RequestParam(value = "type", required = true) Integer type,
 			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
-    		@RequestParam(value = "currentPage", required = false) Integer currentPage
+    		@RequestParam(value = "currentPage", required = false) Integer currentPage,
+    		HttpServletRequest request
 			) {
-		return courseService.getCourseList(type, numberPerPage, currentPage);
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.User};
+		CheckUser.checkUser(token, userTypes);
+		
+		return courseService.getCourseListFromUser(token.getUserId(), type, numberPerPage, currentPage);
 	}
 	
 	
@@ -416,7 +487,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<CourseArrangement> addArrangeMent(
+	public DataWrapper<CourseArrangement> addArrangeMent(
 			@PathVariable Long courseId,
 			@ModelAttribute CourseArrangement courseArrangement,
 			HttpServletRequest request
@@ -451,11 +522,13 @@ public class CourseController {
     *			"courseContent": [
     *				{
     *					"courseContentId": 13,
-    *					"name": "lesson1"
+    *					"name": "lesson1",
+    *					"subName":""
     *				},
     *				{
     *					"courseContentId": 14,
-    *					"name": "lesson2"
+    *					"name": "lesson2",
+    *					"subName": ""
     *				}
     *			]
     *		},
@@ -488,7 +561,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<List<CourseArrangement>> getArrangeMentList(
+	public DataWrapper<List<CourseArrangement>> getArrangeMentList(
 			@PathVariable Long courseId,
 			HttpServletRequest request
 			) {
@@ -536,7 +609,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<Void> updateCourseArrangement(
+	public DataWrapper<Void> updateCourseArrangement(
 			@PathVariable Long courseId,
 			@PathVariable Long courseArrangementId,
 			@ModelAttribute CourseArrangement courseArrangement,
@@ -587,7 +660,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	DataWrapper<Void> deleteCourseArrangement(
+	public DataWrapper<Void> deleteCourseArrangement(
 			@PathVariable Long courseArrangementId,
 			HttpServletRequest request
 			) {
@@ -596,6 +669,68 @@ public class CourseController {
 		CheckUser.checkUser(token, userTypes);
 		
 		return courseService.deleteCourseArrangement(courseArrangementId);
+	}
+	
+	
+	/**
+	* @api {get} api/course/{courseId}/arrangement/{courseArrangementId} 获取课程安排详情（管理员）
+	* @apiName course_arrangement_getDetails
+	* @apiGroup course_arrangement
+	* 
+	* @apiHeader {String} token 身份凭证
+	*
+	* @apiParam {Long} courseId * 课程id（必须）
+	* @apiParam {Long} courseArrangementId * 课程安排id（必须）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": {
+    *			"courseArrangementId": 7,
+    *			"imgSrc": "imgSrc12",
+    *			"name": "lesson1-10:大课程",
+    *			"courseId": 3,
+    *			"courseContent": [//这个字段你不要管，是我用的框架级联出来的
+    *				{
+    *					"courseContentId": 13,
+    *					"name": "lesson1",
+    *					"subName":""
+    *				}
+    *			]
+    *		},
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<CourseArrangement> getCourseArrangementDetails(
+			@PathVariable Long courseArrangementId,
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		return courseService.getArrangeMentDetails(courseArrangementId);
 	}
 	
 	
@@ -611,7 +746,7 @@ public class CourseController {
 	* @apiParam {Long} courseId * 课程id（必须）
 	* @apiParam {Long} courseArrangementId * 课程安排id（必须）
 	* @apiParam {String} name * 课程内容标题（必须）
-	* @apiParam {String} subName * 课程内容副标题（必须）
+	* @apiParam {String} subName * 课程内容副标题（非必须）
 	* @apiParam {String} content * 课程内容（必须）
 	* @apiParam {String} bookName * 课程内容对应的书籍（必须）
 	* @apiParam {String} bookImgSrc * 课程内容对应的书籍封面（必须）
@@ -654,7 +789,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/content", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<CourseContent> addCourseContent(
+	public DataWrapper<CourseContent> addCourseContent(
 			@PathVariable Long courseId,
 			@PathVariable Long courseArrangementId,
 			@ModelAttribute CourseContent courseContent,
@@ -710,7 +845,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/content/{courseContentId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	DataWrapper<Void> deleteCourseContent(
+	public DataWrapper<Void> deleteCourseContent(
 			@PathVariable Long courseId,
 			@PathVariable Long courseArrangementId,
 			@PathVariable Long courseContentId,
@@ -767,7 +902,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/content/{courseContentId}", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<Void> updateCourseContent(
+	public DataWrapper<Void> updateCourseContent(
 			@PathVariable Long courseId,
 			@PathVariable Long courseArrangementId,
 			@PathVariable Long courseContentId,
@@ -834,7 +969,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/content/{courseContentId}", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<CourseContent> getCourseContentDetails(
+	public DataWrapper<CourseContent> getCourseContentDetails(
 			@PathVariable Long courseId,
 			@PathVariable Long courseArrangementId,
 			@PathVariable Long courseContentId,
@@ -889,7 +1024,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/courseCode", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<List<String>> addCourseCode(
+	public DataWrapper<List<String>> addCourseCode(
 			@PathVariable Long courseId,
 			@RequestParam(value = "num", required = true) Integer num,
 			HttpServletRequest request
@@ -948,7 +1083,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/courseCode", method = RequestMethod.GET)
 	@ResponseBody
-	DataWrapper<List<CourseCode>> getCourseCodeList(
+	public DataWrapper<List<CourseCode>> getCourseCodeList(
 			@PathVariable Long courseId,
 			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
     		@RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -1001,7 +1136,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "{courseId}/courseCode/{courseCodeId}", method = RequestMethod.DELETE)
 	@ResponseBody
-	DataWrapper<Void> deleteCourseCode(
+	public DataWrapper<Void> deleteCourseCode(
 			@PathVariable Long courseId,
 			@PathVariable Long courseCodeId,
 			HttpServletRequest request
@@ -1051,7 +1186,7 @@ public class CourseController {
 	**/
 	@RequestMapping(value = "/useCourseCode", method = RequestMethod.POST)
 	@ResponseBody
-	DataWrapper<Void> useCourseCode(
+	public DataWrapper<Void> useCourseCode(
 			@RequestParam(value = "courseCodeStr", required = true) String courseCodeStr,
 			HttpServletRequest request
 			) {

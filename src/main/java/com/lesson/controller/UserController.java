@@ -14,9 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lesson.enums.UserType;
+import com.lesson.models.Book;
+import com.lesson.models.Course;
 import com.lesson.models.Token;
 import com.lesson.models.User;
 import com.lesson.repository.TokenRepository;
+import com.lesson.service.BookService;
+import com.lesson.service.CourseService;
 import com.lesson.service.UserService;
 import com.lesson.utils.CheckUser;
 import com.lesson.utils.DataWrapper;
@@ -31,6 +35,12 @@ public class UserController {
 	
 	@Autowired
 	TokenRepository tokenRepository;
+	
+	@Autowired
+	BookService bookService;
+	
+	@Autowired
+	CourseService courseService;
 	
 	
 	/**
@@ -390,7 +400,9 @@ public class UserController {
     *			"headSrc": null,
     *			"note": null,
     *			"parent": "妈妈",
-    *			"registerDate": 1222222
+    *			"registerDate": 1222222,
+    *			"readCount": 2,//已读绘本数量
+    *			"courseCount": 0//已激活课程数量
     *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -581,6 +593,125 @@ public class UserController {
 		UserType[] userTypes = { UserType.Admin};
 		CheckUser.checkUser(token, userTypes);
 		return userService.getUserDetails(userId);
+	}
+	
+	
+	
+	/**
+	* @api {get} api/user/{userId}/book 获取用户阅读成就列表（管理员）
+	* @apiName user_getUser_book_from_admin
+	* @apiGroup user
+	* 
+	* @apiHeader {String} token 身份凭证
+	* @apiParam {Long} userId * 用户id（必须）
+	* @apiParam {int} numberPerPage * 每页大小（非必须,默认分页,1-10）//这是由于阅读的书籍可能过多,像1000本
+	* @apiParam {int} currentPage * 当前页（非必须）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": [{
+    *			"bookId": 1,
+    *			"bookName": "测试书籍1",
+    *			"bookImgSrc": "http://www.baidu.com",
+    *			"readDate": 1498663078000,
+    *			"userId": 3,
+    *			"isCourseBook": 1,//0-个人书籍,1-课程书籍
+    *			"courseContentId": 2 ////自己添加的书籍则为空
+    *		}],
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{userId}/book", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<List<Book>> getUserBookList(
+			@PathVariable Long userId,
+			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
+    		@RequestParam(value = "currentPage", required = false) Integer currentPage,
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = { UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		return bookService.getUserBookListByUserId(userId, numberPerPage, currentPage);
+	}
+	
+	
+	/**
+	* @api {get} api/user/{userId}/course 获取用户激活的课程列表（管理员）
+	* @apiName user_getUser_course_from_admin
+	* @apiGroup user
+	* 
+	* @apiHeader {String} token 身份凭证
+	* @apiParam {Long} userId * 用户id（必须）
+	* @apiParam {int} numberPerPage * 每页大小（非必须,默认分页,1-10）
+	* @apiParam {int} currentPage * 当前页（非必须）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": [{
+    *			"courseId": 3,
+    *			"name": "课程2",
+    *			"imgSrc": "imgSrc",
+    *			"isFree": 0,
+    *			"type": 2,
+    *			"createDate": 1498491296000,
+    *			"link": "link"
+   	*		}],
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{userId}/course", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<List<Course>> getUserCourseList(
+			@PathVariable Long userId,
+			@RequestParam(value = "numberPerPage", required = false) Integer numberPerPage,
+    		@RequestParam(value = "currentPage", required = false) Integer currentPage,
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = { UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		return courseService.getUserCourseListByUserId(userId, numberPerPage, currentPage);
 	}
 	
 	

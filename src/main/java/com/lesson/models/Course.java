@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 
 @Entity
 @Table(name = "t_course")
@@ -21,8 +23,16 @@ public class Course {
 	private Date createDate;
 	
 	private String link;
+	private int isBought;
 	
 	
+	@Transient
+	public int getIsBought() {
+		return isBought;
+	}
+	public void setIsBought(int isBought) {
+		this.isBought = isBought;
+	}
 	@Basic
 	@Column(name = "link")
 	public String getLink() {

@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "t_user")
@@ -26,9 +27,25 @@ public class User {
 	private String parent;
 	private Date registerDate;
 	
+	private Long readCount;
+	private Long courseCount;
 	
 	
 	
+	@Transient
+	public Long getReadCount() {
+		return readCount;
+	}
+	public void setReadCount(Long readCount) {
+		this.readCount = readCount;
+	}
+	@Transient
+	public Long getCourseCount() {
+		return courseCount;
+	}
+	public void setCourseCount(Long courseCount) {
+		this.courseCount = courseCount;
+	}
 	@Basic
 	@Column(name = "parent")
 	public String getParent() {

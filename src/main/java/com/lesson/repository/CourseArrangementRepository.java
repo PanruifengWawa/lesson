@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lesson.models.CourseArrangement;
 
 public interface CourseArrangementRepository extends JpaRepository<CourseArrangement, Long> {
+	CourseArrangement findByCourseArrangementId(Long courseArrangementId);
 	
 	@Query("select arrange from CourseArrangement arrange where arrange.courseId = :courseId order by arrange.courseArrangementId asc" )
     Page<CourseArrangement> findArrangementListByCourseId( @Param("courseId") Long courseId, Pageable pageable);

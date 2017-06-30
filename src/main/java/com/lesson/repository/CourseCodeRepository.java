@@ -16,6 +16,8 @@ public interface CourseCodeRepository extends JpaRepository<CourseCode, Long> {
 	CourseCode findByCourseCodeStr(String courseCodeStr);
 	CourseCode findByUserIdAndCourseId(Long userId, Long courseId);
 	
+	Long countByUserId(Long userId);
+	
 	
 	@Query("select code from CourseCode code where code.courseId = :courseId")
     Page<CourseCode> findCodeListByCourseId( @Param("courseId") Long courseId, Pageable pageable);

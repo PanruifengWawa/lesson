@@ -142,9 +142,12 @@ public class CourseServiceImpl implements CourseService {
 	}
 
 	@Override
-	public DataWrapper<List<Course>> getCourseList(Integer type, Integer numberPerPage, Integer currentPage) {
+	public DataWrapper<List<Course>> getCourseListFromUser(Long userId, Integer type, Integer numberPerPage, Integer currentPage) {
 		// TODO Auto-generated method stub
-		return courseRepository.getCourseListFromUser(type, numberPerPage, currentPage);
+		if (type == null || CourseTypeEnum.parse(type) == null) {
+			throw new ParameterException("课程类型错误");
+		}
+		return courseRepository.getCourseListFromUser(userId, type, numberPerPage, currentPage);
 	}
 
 	@Override
@@ -243,9 +246,13 @@ public class CourseServiceImpl implements CourseService {
 		if (courseContent.getName() == null || courseContent.getName().equals("")) {
 			throw new ParameterException("课程内容标题为空");
 		}
-		if (courseContent.getSubName() == null || courseContent.getSubName().equals("")) {
-			throw new ParameterException("课程内容副标题为空");
+//		if (courseContent.getSubName() == null || courseContent.getSubName().equals("")) {
+//			throw new ParameterException("课程内容副标题为空");
+//		}
+		if (courseContent.getSubName() == null) {
+			courseContent.setSubName("");
 		}
+		
 				
 		if (courseContent.getContent() == null || courseContent.getContent().equals("")) {
 			throw new ParameterException("课程内容为空");
@@ -390,6 +397,31 @@ public class CourseServiceImpl implements CourseService {
 			}
 		}
 		return dataWrapper;
+	}
+
+	@Override
+	public DataWrapper<Course> getCourseDetails(Long courseId) {
+		// TODO Auto-generated method stub
+		Course course = courseRepository.findByCourseId(courseId);
+		DataWrapper<Course> dataWrapper = new DataWrapper<Course>();
+		dataWrapper.setData(course);
+		return dataWrapper;
+	}
+
+	@Override
+	public DataWrapper<CourseArrangement> getArrangeMentDetails(Long courseArrangementId) {
+		// TODO Auto-generated method stub
+		CourseArrangement courseArrangement = courseArrangementRepository.findByCourseArrangementId(courseArrangementId);
+		DataWrapper<CourseArrangement> dataWrapper = new DataWrapper<CourseArrangement>();
+		dataWrapper.setData(courseArrangement);
+		return dataWrapper;
+	}
+
+	@Override
+	public DataWrapper<List<Course>> getUserCourseListByUserId(Long userId, Integer numberPerPage, Integer currentPage) {
+		// TODO Auto-generated method stub
+		
+		return courseRepository.getCourseListByUserId(userId, numberPerPage, currentPage, courseCodeRepository.countByUserId(userId).intValue());
 	}
 
 }

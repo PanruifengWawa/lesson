@@ -18,6 +18,8 @@ import com.lesson.exceptions.DBException;
 import com.lesson.exceptions.ParameterException;
 import com.lesson.models.Token;
 import com.lesson.models.User;
+import com.lesson.repository.BookRepository;
+import com.lesson.repository.CourseCodeRepository;
 import com.lesson.repository.TokenRepository;
 import com.lesson.repository.UserRepository;
 import com.lesson.service.UserService;
@@ -34,6 +36,12 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	TokenRepository tokenRepository;
+	
+	@Autowired
+	BookRepository bookRepository;
+	
+	@Autowired
+	CourseCodeRepository courseCodeRepository;
 
 	@Override
 	public DataWrapper<Void> register(User user, String code) {
@@ -237,6 +245,8 @@ public class UserServiceImpl implements UserService {
 		Page<User> page = userRepository.findUserListByType(UserType.User.getCode(), pageable);
 		for(User eUser : page.getContent()) {
 			eUser.setPassword(null);
+			eUser.setReadCount(bookRepository.countByUserId(eUser.getUserId()));
+			eUser.setCourseCount(courseCodeRepository.countByUserId(eUser.getUserId()));
 		}
 		
 		DataWrapper<List<User>> dataWrapper = new DataWrapper<List<User>>();
