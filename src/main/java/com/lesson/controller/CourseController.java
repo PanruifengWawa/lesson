@@ -1197,6 +1197,52 @@ public class CourseController {
 		return courseCodeService.useCourseCode(courseCodeStr, token.getUserId());
 	}
 	
+	/**
+	* @api {post} api/course/isBought 是否已经购买课程（用户）
+	* @apiName course_isBought
+	* @apiGroup course
+	* 
+	* @apiHeader {String} token 身份凭证
+	*
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": true,
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "/isBought", method = RequestMethod.GET)
+	@ResponseBody
+	public DataWrapper<Boolean> isBought(
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.User};
+		CheckUser.checkUser(token, userTypes);
+		
+		return courseCodeService.isBought(token.getUserId());
+	}
+	
 	
 
 }

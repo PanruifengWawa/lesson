@@ -13,4 +13,6 @@ public interface CourseCodeService {
 	DataWrapper<List<CourseCode>> getCourseCodeList(Long courseId, Integer numberPerPage, Integer currentPage);
 	
 	DataWrapper<Void> useCourseCode(String courseCodeStr, Long userId);
+	
+	DataWrapper<Boolean> isBought(Long userId);
 }

@@ -1,6 +1,5 @@
 package com.lesson.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class BookServiceImpl implements BookService {
 	@Override
 	public DataWrapper<List<Book>> getUserBookListByUserId(Long userId, Integer numberPerPage, Integer currentPage) {
 		// TODO Auto-generated method stub
-		if (numberPerPage == null || numberPerPage <= 0 || numberPerPage > 10) {
+		if (numberPerPage == null || numberPerPage <= 0 || numberPerPage > 50) {
 			numberPerPage = 10;
 		}
 		if (currentPage == null || currentPage <= 0) {
@@ -60,8 +59,10 @@ public class BookServiceImpl implements BookService {
 		if (book.getUserId() == null) {
 			throw new ParameterException("用户未登录");
 		}
+		if (book.getReadDate() == null) {
+			throw new ParameterException("阅读时间错误");
+		}
 		book.setBookId(null);
-		book.setReadDate(new Date());
 		book.setIsCourseBook(BookOrigin.PersonalBook.getCode());
 		book.setCourseContentId(null);
 		try {

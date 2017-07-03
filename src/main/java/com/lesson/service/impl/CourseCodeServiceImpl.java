@@ -142,4 +142,13 @@ public class CourseCodeServiceImpl implements CourseCodeService {
 		return dataWrapper;
 	}
 
+	@Override
+	public DataWrapper<Boolean> isBought(Long userId) {
+		// TODO Auto-generated method stub
+		Long boughtCount = courseCodeRepository.countByUserId(userId);
+		DataWrapper<Boolean> dataWrapper = new DataWrapper<Boolean>();
+		dataWrapper.setData(boughtCount > 0 ? true : false);
+		return dataWrapper;
+	}
+
 }

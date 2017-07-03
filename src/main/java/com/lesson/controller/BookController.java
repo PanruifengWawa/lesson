@@ -20,6 +20,7 @@ import com.lesson.repository.TokenRepository;
 import com.lesson.service.BookService;
 import com.lesson.utils.CheckUser;
 import com.lesson.utils.DataWrapper;
+import com.lesson.utils.DateUtil;
 
 @Controller
 @RequestMapping(value = "/api/book")
@@ -39,6 +40,7 @@ public class BookController {
 	* @apiHeader {String} token 身份凭证
 	* @apiParam {String} bookName * 书籍名（必须）
 	* @apiParam {String} bookImgSrc * 书籍封面（必须）
+	* @apiParam {String} readDateStr * 阅读日期（必须,yyyy-mm-dd）
 	*
 	* @apiSuccessExample {json} Success-Response:
 	* 	HTTP/1.1 200 ok
@@ -78,12 +80,15 @@ public class BookController {
 	@ResponseBody
 	public DataWrapper<Book> addBook(
 			@ModelAttribute Book book,
+			@RequestParam(value = "readDateStr", required = true) String readDateStr,
 			HttpServletRequest request
 			) {
 		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
 		UserType[] userTypes = { UserType.User};
 		CheckUser.checkUser(token, userTypes);
 		book.setUserId(token.getUserId());
+		
+		book.setReadDate(DateUtil.parse(readDateStr));
 		
 		return bookService.addBook(book);
 	}
@@ -95,7 +100,7 @@ public class BookController {
 	* @apiGroup book
 	*
 	* @apiHeader {String} token 身份凭证
-	* @apiParam {int} numberPerPage * 每页大小（非必须,默认分页,1-10）//这是由于阅读的书籍可能过多,像1000本
+	* @apiParam {int} numberPerPage * 每页大小（非必须,默认分页,默认10,1-50）//这是由于阅读的书籍可能过多,像1000本
 	* @apiParam {int} currentPage * 当前页（非必须）
 	*
 	* @apiSuccessExample {json} Success-Response:
@@ -201,7 +206,7 @@ public class BookController {
 	* @apiGroup book
 	* 
 	* @apiParam {Long} userId * 用户id
-	* @apiParam {int} numberPerPage * 每页大小（必须,默认分页,1-10）//防止有人直接调用接口拖库
+	* @apiParam {int} numberPerPage * 每页大小（必须,默认分页,默认10,1-50）//防止有人直接调用接口拖库
 	* @apiParam {int} currentPage * 当前页（必须）
 	*
 	* @apiSuccessExample {json} Success-Response:

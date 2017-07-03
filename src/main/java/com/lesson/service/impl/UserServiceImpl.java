@@ -224,6 +224,8 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		User user = userRepository.findByUserId(userId);
 		user.setPassword(null);
+		user.setReadCount(bookRepository.countByUserId(user.getUserId()));
+		user.setCourseCount(courseCodeRepository.countByUserId(user.getUserId()));
 		DataWrapper<User> dataWrapper = new DataWrapper<User>();
 		dataWrapper.setData(user);
 		return dataWrapper;

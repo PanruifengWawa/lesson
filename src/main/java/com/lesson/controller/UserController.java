@@ -561,7 +561,9 @@ public class UserController {
     *			"headSrc": null,
     *			"note": null,
     *			"parent": "妈妈",
-    *			"registerDate": 1222222
+    *			"registerDate": 1222222,
+    *			"readCount": 2,//已读绘本数量
+    *			"courseCount": 0//已激活课程数量
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,
