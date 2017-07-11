@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/login.css"/>
+  </head>
+  <body>
+    <div id="forBg"></div>
+    <div id="mainWrapper" class="clearfix">
+      <div id="loginImg"><img src="assets/images/login_img.png" alt="" /></div>
+      <div id="loginForm" jet-form="login" class="bg-w1">
+        <img class="decr-img login" src="assets/images/crown.png" alt="" />
+        <div id="loginTitle" class="fz-1 fc-y">用户登录</div>
+        <div class="clearfix login-item">
+          <div class="login-part-l"><span class="fz-3 fc-y">用户名</span></div>
+          <div class="login-part-r"><input type="number" class="c-input" jet-name="phone" jet-valid="phone" placeholder="注册用的手机号"/></div>
+        </div>
+        <div class="clearfix login-item">
+          <div class="login-part-l"><span class="fz-3 fc-y l-s">密 &nbsp;码</span></div>
+          <div class="login-part-r"><input type="password" class="c-input" jet-name="password" jet-valid="notnull"/></div>
+        </div>
+        <div class="clearfix login-item">
+          <div class="login-part-l small"><div class="c-btn" onclick="login()">登 &nbsp; &nbsp;录</div></div>
+          <div class="login-part-r small"><span class="fz-4 fc-y l-s" onclick="J.jump('forget_pw.html')">忘记密码</span></div>
+        </div>
+        <div class="clearfix login-item">
+          <div class="login-part-l small"><div class="c-btn" onclick="J.jump('regist.html')">注册账号</div></div>
+          <div class="login-part-r small"><span class="fz-4 fc-y l-s" onclick="visitLogin()">游客登录</span></div>
+        </div>
+      </div>
+      <div id="loginBottomText">
+        <img src="assets/images/login_text.png" alt="" />
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      allowStay=true;
+      function login(){
+        J.jetForm("login").validate(function(data,obj){
+          postData(data,"/user/login",function(d,obj){
+            J.show("登录成功！正在跳转");
+            setCookie("token",obj.token);
+            setCookie("visit","false");
+            setTimeout(function(){
+              J.jump("course_main.html");
+            },500);
+          });
+        });
+      }
+      function visitLogin(){
+        setCookie("visit","true");
+        setCookie("token","");
+        J.jump('course_main.html');
+      }
+    </script>
+  </body>
+</html>

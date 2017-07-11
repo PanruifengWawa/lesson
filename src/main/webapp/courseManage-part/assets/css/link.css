@@ -1,0 +1,26 @@
+#linkWrapper{
+  text-align: left;
+  padding: 10px 30px;
+}
+#linkWrapper .c-input{
+  width: 500px;
+}
+#linkWrapper .c-btn{
+  display: inline-block;
+  text-align: center;
+  width: 60px;
+  height: 30px;
+  line-height: 28px;
+}
+.mod-item .c-input{
+  width: 200px!important;
+}
+.mod-item .c-btn{
+  width: 80px!important;
+  margin: 0 auto!important;
+  display: block!important;;
+}
+.mod-item{
+  width:300px;
+  margin:10px 0;
+}

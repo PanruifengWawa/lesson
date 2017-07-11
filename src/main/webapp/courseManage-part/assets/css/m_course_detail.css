@@ -1,0 +1,30 @@
+.l-img,.l-video{
+  width:100%;
+  border-radius:3px;
+}
+.cl-l-item.iv{
+  padding:5px 5px 3px 5px;
+}
+
+.cover{
+  position:fixed;
+  top:0;
+  width:100%;
+  height:100%;
+  z-index:1000;
+  background-color:rgba(0,0,0,0.7);
+  background-position:center;
+  background-repeat:no-repeat;
+  background-size:contain;
+  display:none;
+  max-width:600px;
+  left: 0;
+}
+.cover-close{
+  background-color: #f44;
+  color: #fff;
+  padding: 8px;
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+}

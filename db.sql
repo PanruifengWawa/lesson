@@ -103,8 +103,18 @@ create index book_user_course_content_index on t_book(user_id,course_content_id)
 
 INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
 
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin1','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
 
 
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin2','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
+
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin3','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
+
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin4','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
+
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('admin5','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
+
+INSERT INTO `t_user` (`phone`,`password`,`nick_name`,`gender`,`birthday`,`type`,`city`,`head_src`,`note`,`parent`,`register_date`) VALUES ('prf','8b6f59508eab3af66a2b3bbd8bd2846f','管理员','M','1993-10-22',0,'上海',NULL,NULL,'','2017-6-28');
 
 
 

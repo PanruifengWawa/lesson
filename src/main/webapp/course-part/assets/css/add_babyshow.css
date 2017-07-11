@@ -1,0 +1,27 @@
+body{
+  padding:0 20px!important;
+}
+.regist-item{
+  margin: 12px auto;
+  width: 80%;
+}
+.add-info{
+  margin: 10px;
+  font-weight: bold;
+}
+.add-img{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  margin: -15px;
+}
+.add-bg-img{
+  width:100%;
+  border-radius:10px;
+}
+.add-w{
+  position:relative;
+  margin-top:20px;
+}

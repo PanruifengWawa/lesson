@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>忘记密码</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/regist.css"/>
+  </head>
+  <body>
+    <div id="forBg"></div>
+    <div id="mainWrapper" jet-form="forgetPw" class="bg-w1">
+      <img class="decr-img" id="registDecSun" src="assets/images/sun.png" alt="" />
+      <div id="registTitle" class="fz-2 fc-o">忘记密码</div>
+      <div class="clearfix regist-item relative">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">手机号码</span></div>
+        <div class="regist-part-r"><input type="number" class="c-input" jet-name="phone" jet-valid="phone"/></div>
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">验 证 码</span></div>
+        <div class="regist-part-r">
+          <input type="number" class="c-input valid-code" jet-valid="number[4]" jet-name="code"/>
+          <div class="c-btn valid-code" id="sendCode" onclick="sendCode()">获取验证码</div>
+        </div>
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">新 密 码</span></div>
+        <div class="regist-part-r"><input type="password" class="c-input" jet-name="newPassword" jet-valid="notnull"/></div>
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">确认密码</span></div>
+        <div class="regist-part-r"><input type="password" class="c-input" id="passwordAgain"/></div>
+      </div>
+      <div class="regist-item relative">
+        <div class="c-btn fc-b" onclick="submit()">提交</div>
+        <img class="decr-img" id="registDecFlower" src="assets/images/flower_double.png" alt="" />
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      allowStay=true;
+      function submit(){
+        J.jetForm("forgetPw").validate(function(data,obj){
+          if(data.newPassword!=J.id("passwordAgain").val()){
+            J.show("两次密码输入不一致。","error");
+          }else{
+            postData(data,"/user/forgetPWD",function(d){
+              J.show("修改密码成功！即将跳转至登录页面");
+              setTimeout(function(){
+                J.jump("index.html");
+              },1000);
+            },false);
+          }
+        });
+      }
+      function sendCode(){
+        if(J.validInput(J.jetName("phone"),false)=="true"){
+          getData({"phone":J.jetName("phone").val()},"/code/getVerifyCode",function(d){
+            J.show("发送成功，请注意查收短信");
+            countCodeTime();
+          });
+        }else{
+          J.show("手机号码格式有误，请重新输入！","error");
+        }
+      }
+      var count=120,t;
+      function countCodeTime(){
+        J.id("sendCode").txt("重新获取:"+count+"s").clk(null);
+        t=setInterval(function(){
+          if(count>0){
+            count--;
+            J.id("sendCode").txt("重新获取:"+count+"s");
+          }else{
+            count=120;
+            clearInterval(t);
+            J.id("sendCode").txt("重新获取验证码").clk(sendCode);
+          }
+        },1000);
+      }
+    </script>
+  </body>
+</html>

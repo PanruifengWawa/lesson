@@ -1,0 +1,19 @@
+#loginBox{
+  width: 400px;
+  height: 200px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  margin: -100px -200px;
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: #888 1px 1px 20px 1px;    
+  padding: 40px 0;
+}
+.item{
+  margin:10px auto;
+}
+body{
+  position:fixed;
+  overflow:hidden;
+}

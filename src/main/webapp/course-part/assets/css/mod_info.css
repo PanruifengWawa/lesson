@@ -1,0 +1,41 @@
+.mod-title{
+  text-align: left;
+  margin-top: 5px;
+  margin-left: 15px;
+  font-size: 20px;
+}
+.mod-title.first{
+  margin-bottom: 50px;
+}
+.part{
+  position:relative;
+  border-bottom:1px solid rgba(255,255,255,.4);
+}
+.u-photo{
+  position: absolute;
+  top: 0;
+  right: 10px;
+  border-radius:10px;
+  width:60px;
+  height:60px;
+}
+.decr-img{
+  top: -40px;
+  right: -10px;
+  z-index: 2;
+}
+.mod-btn{
+  width: 100px;
+  float: right;
+  margin-right: 10px;
+  color: #fff;
+  margin-bottom:10px;
+  text-shadow:none;
+}
+.logout-btn{
+  width: 100px;
+  margin-left: 10px;
+  color: #fff;
+  margin-top:10px;
+  text-shadow:none;
+}

@@ -15,6 +15,7 @@ import org.hibernate.type.StandardBasicTypes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.lesson.enums.CourseFreeEnum;
 import com.lesson.models.Course;
 import com.lesson.repository.custom.CourseRepositoryCustom;
 import com.lesson.utils.DaoUtils;
@@ -86,7 +87,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 		Session session = sessionFactory.getCurrentSession();
         String sql = "select course.course_id as courseId, course.name as name, course.img_src as imgSrc, course.is_free as isFree, course.type as type, course.link as link, course.create_date as createDate, " +
         			 "(case when course_code.course_code_id is null then 0 else 1 end) as isBought from " + 
-        					"(select * from t_course where type = ?) course " + 
+        					"(select * from t_course where type = ? and is_free = ?) course " + 
         							"left join " +
         					"(select * from t_course_code where user_id = ?) course_code " +
         					"on course.course_id = course_code.course_id order by isBought desc,isFree desc, create_date desc";
@@ -118,7 +119,8 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
         
         try {
         	query.setParameter(0, type);
-        	query.setParameter(1, userId);
+        	query.setParameter(1, CourseFreeEnum.No.getCode());
+        	query.setParameter(2, userId);
         	ret=query.list();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -137,12 +139,13 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 	@SuppressWarnings("unchecked")
 	public BigInteger getCouserCountByType(Integer type) {
 		// TODO Auto-generated method stub
-		String sql = "select count(*) from  t_course where type = ? ";
+		String sql = "select count(*) from  t_course where type = ? and is_free = ?";
 		List<BigInteger> ret = null;
 		Session session = sessionFactory.getCurrentSession();
         try {
             Query query = session.createSQLQuery(sql);
             query.setParameter(0, type);
+            query.setParameter(1, CourseFreeEnum.No.getCode());
             ret = query.list();
             
         } catch (Exception e) {

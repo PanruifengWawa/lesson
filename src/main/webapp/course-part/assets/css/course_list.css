@@ -1,0 +1,93 @@
+
+#title{
+  margin: 30px auto;
+  font-size: 20px;
+  width: 90%;
+  position: relative;
+}
+#title img{
+  top: -25px;
+  right: 10px;
+}
+#courseList{
+  padding: 0 15px;
+}
+.cl-item,.cl-l-w{
+  position: relative;
+  padding:1px;
+  padding-left: 50px;
+  border-bottom: 1px solid rgba(255,255,255,.5);
+}
+.arr .cl-l-item:active{
+  background-color:rgb(255,218,37);
+}
+.cl-i-img{
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  left: 0;
+  top: 3px;
+  border-radius: 5px;
+}
+.cl-i-text{
+  
+}
+
+.cl-lesson{
+  display:none;
+}
+.cl-l-item{
+}
+.m-intro-item{
+  margin: 6px 0;
+}
+.m-intro-head{
+  top: 16px;
+  left: 5px;
+}
+.m-intro-text{
+  padding-left:20px;
+}
+.cl-item .m-intro-head{
+  background-color:rgb(255,147,0)!important;
+}
+
+/*course detail*/
+.main-t{
+  
+}
+.small-t{
+  
+}
+.cl-l-single{
+  position: relative;
+  padding: 3px 0;
+}
+.cl-l-single .m-intro-head{
+  top:9px;
+}
+audio{
+  width:100%;
+  position:absolute;
+}
+.audio-img{
+  position: absolute;
+  left: 10px;
+  top: 8px;
+  height: 15px;
+}
+.audio{
+  color:#fff;
+  position: relative;
+  width: 170px;
+  height: 32px;
+  line-height: 32px;
+  border-radius: 5px;
+  text-align: center;
+  background-color: rgba(200,200,200,.3);
+}
+
+
+
+
+

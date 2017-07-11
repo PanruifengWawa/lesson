@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>管理员登录</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/login.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w head-title">小芝妈咪后台管理系统</div>
+    </div>
+    <div id="loginBox">
+      <div class="item">
+        用户名：
+        <input type="text" jet-name="phone" jet-valid="notnull" class="c-input" />
+      </div>
+      <div class="item">
+        密&nbsp; &nbsp;码：
+        <input type="password" jet-name="password" jet-valid="notnull" class="c-input" />
+      </div>
+      <div class="c-btn item" onclick="login()">登录</div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      allowStay=true;
+      J.ready(function(){
+        J.jetName("password").on("keydown",function(e){
+          if(e.keyCode==13){
+            login();
+          }
+        })
+      });
+      function login(){
+        J.id("loginBox").validate(function(data,obj){
+          postData(data,"/user/login",function(d,data){
+            J.show("登录成功！");
+            setCookie("token",data.token);
+            setCookie("adminName",d.phone);
+            delay('J.jump("course_main.html")');
+          },false);
+        });
+      }
+    </script>
+  </body>
+</html>

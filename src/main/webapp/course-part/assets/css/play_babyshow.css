@@ -1,0 +1,40 @@
+.v-info{
+  position:absolute;
+  width: auto;
+  background-color: #eee;
+  height: auto;
+  padding: 5px 15px;
+  border-radius: 15px;
+  font-weight: bold;
+  bottom: 2px;
+  right: 0;
+}
+.ach-btn img{
+  left: -8px;
+}
+.info-w{
+  margin-top:20px; 
+}
+.qr-code{
+  float:left;
+  height:100px;
+  width:25%;
+  margin-right:5%;
+}
+.qr-code img{
+  width:100%;
+  border-radius: 5px;
+}
+.info-text{
+  float: left;
+  height: 100px;
+  width: 65%;
+  margin-left: 5%;
+  background-color: rgba(255,255,255,.2);
+  border-radius: 5px;
+  color: #fff;
+  padding: 10px;
+}
+.b-title{
+  padding-left:0;
+}
