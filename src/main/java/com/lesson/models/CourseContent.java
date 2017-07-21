@@ -19,8 +19,19 @@ public class CourseContent {
 	private Long courseArrangementId;
 	private String bookName;
 	private String bookImgSrc;
+	private Integer state;
 	
 	
+	
+	
+	@Basic
+	@Column(name = "state")
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	@Basic
 	@Column(name = "book_name")
 	public String getBookName() {

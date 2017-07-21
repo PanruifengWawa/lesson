@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>我正在使用【小芝妈咪】给宝宝学习英语，快来看一看我的阅读成就吧！</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/achieve.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_detail.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/page.css"/>
+  </head>
+  <body class="common">
+    <img class="wc-share-logo" src="assets/images/share.png"/>
+    <div id="forBg"></div>
+    <div id="achTitle">阅读成就</div>
+    <img src="assets/images/sun.png" alt="" class="decr-img" />
+    <div id="joinMe">
+      <div id="achWrapper" class="n-remove">
+        <img id="achPhoto" src="assets/images/u_photo_def.png" alt="" />
+        <div id="achBarWrapper">
+          <div class="fc-b fz-4 bold">
+            <span id="readNum">0</span> of 1000 Read
+          </div>
+          <div id="totalBar">
+            <div id="readBar"></div>
+          </div>
+        </div>
+      </div>
+    
+      <div class="page-wrapper">
+        <div class="page-bar" id="bookList">
+          
+        </div>
+      </div>
+      <div class="clearfix n-remove" id="addBookBtn">
+        <div class="ach-btn c-btn" onclick="J.jump('add_book.html')">
+          <img src="assets/images/add.png" alt="" />
+          添加已读绘本
+        </div>
+      </div>
+      <div class="clearfix n-remove">
+        <div class="ach-btn c-btn" onclick="showShare()">
+          <img src="assets/images/friend_circle.png" alt="" />
+          <span id="shareText">分享我的成就</span>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <div class="footer-item" data-visit="true" onclick="J.jump('course_main.html')">我的课程</div>
+      <div class="footer-item active">我的成就</div>
+      <div class="footer-item" data-visit="true" onclick="J.jump('user_center.html')">用户中心</div>
+    </div>
+    <div class="cover" onclick="this.fadeOut()">
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript" src="assets/js/page.js"></script>
+    <script type="text/javascript">
+      var page=null;
+      var index=1;
+      var t_page=1;
+      var userId=undefined;
+      var bookUrl="/book";
+      allowStay=true;
+      J.ready(function(){
+        var id=urlParam().id;
+        J.class("cover").css({
+            "background-image":"url('assets/images/share_img.png')",
+            "width":J.width()+"px",
+            "height":J.height()+"px"
+          });
+        if(visit()){
+          if(id==undefined){
+            J.jump("regist.html");
+          }else{//游客获取用户成就
+            userId=id;
+            bookUrl="/book/share";
+            loadBookList();
+            J.id("addBookBtn").remove();
+            J.id("shareText").txt("分享TA的成就");
+            J.id("achPhoto").attr("src",urlParam().img)
+          }
+        }else{
+          if(isBought()){
+            if(id==undefined){
+              getData(null,"/user",function(d){
+                if(d.headSrc==null){
+                  d.headSrc=def_img;
+                }
+                J.jump("achieve.html?id="+d.userId+"&img="+d.headSrc);
+              });
+            }else{//用户加载书籍列表
+              loadBookList();
+              getData(null,"/user",function(d){
+                if(d.headSrc==null){
+                  d.headSrc=def_img;
+                }
+                J.id("achPhoto").attr("src",d.headSrc)
+              });
+            }
+          }else{
+            showBoughtInfo();
+          }
+        }
+      });
+      function loadBookList(){
+        var p_data={
+          numberPerPage:50,
+          currentPage:index
+        };
+        var n_token=true;
+        if(userId!=undefined){
+          p_data.userId=userId;
+          n_token=false;
+        }
+        J.showWait("正在加载成就列表...");
+        var td=[];
+        getData(p_data,bookUrl,function(data,d){
+          J.show("加载成功");
+          index=d.currentPage;
+          t_page=d.totalPage;
+          setAchieveNum(d.totalNumber);
+          appendBookWrapper(data);
+        },n_token)
+      }
+      function setAchieveNum(num){
+        J.id("readNum").txt(num);
+        J.id("readBar").css("width",(num/10)+"%")
+      }
+      function showBoughtInfo(){
+        var click=""
+        if(storeUrl==""){
+          click="J.show('敬请期待...')";
+        }else{
+          click="J.jump('http://"+storeUrl+"')";
+        }
+        J.id("joinMe").empty().html('\
+          <div class="info-text"><div>快加入阅读课堂，</div><div>创建新的成就吧！</div></div>\
+          <div class="c-btn info-btn" onclick="'+click+'")">确定</div>\
+        ');
+        var h=(J.height()-J.id("joinMe").hei())/2;
+        J.id("joinMe").css({
+          position:"fixed",
+          top:h+"px",
+          width: "100%"
+        });
+      }
+      function appendBookWrapper(d){
+        var obj=J.id("bookList");
+        obj.empty();
+        d.group(10).each(function(item){
+          obj.append(geneBookWrapper(item));
+        });
+        if(page==null){
+          page=new Page(obj,obj.parent().wid());
+          page.prevCall(function(){
+            if(index==1){
+              J.show("已是第一页","warn");
+            }else{
+              index--;
+              loadBookList();
+            }
+          });
+          page.nextCall(function(){
+            if(index==t_page){
+              J.show("已是最后一页","warn");
+            }else{
+              index++;
+              loadBookList();
+            }
+          });
+        }else{
+          page.reinit();
+        }
+      }
+      function geneBookWrapper(data){
+        var _w=J.new("div.page-item");
+        data.each(function(item){
+          _w.append(geneBookItem(item));
+        })
+        return _w;
+      }
+      function geneBookItem(data){
+        var _w=J.new("div.book-item");
+          var _img=J.new("img.book-img").attr("src",data.bookImgSrc);
+          var _tw=J.new("div.book-text-w");
+            var _name=J.new("div.book-text.m-intro-item");
+              var _nhead=J.new("div.m-intro-head");
+              var _ntext=J.new("div.m-intro-text").txt(data.bookName);
+            _name.append([_nhead,_ntext]);
+            var _time=J.new("div.book-text.m-intro-item");
+              var _thead=J.new("div.m-intro-head");
+              var _ttext=J.new("div.m-intro-text").txt(getReadDateStr(data.readDate));;
+            _time.append([_thead,_ttext]);
+          _tw.append([_name,_time]);
+        _w.append([_img,_tw]);
+        return _w;
+      }
+      var months=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      function getReadDateStr(stamp){
+        var str="Read: "
+        var arr=getDateByStamp(stamp).split("-");
+        str+=months[parseInt(arr[1])];
+        str+=(" "+arr[2]+" , "+arr[0]);
+        return str;
+      }
+      function showShare(){
+        J.class("cover").fadeIn();
+      }
+    </script>
+  </body>
+</html>

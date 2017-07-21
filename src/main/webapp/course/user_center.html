@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>用户中心</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/user_center.css"/>
+  </head>
+  <body>
+    <div id="forBg"></div>
+    <div id="head" class="clearfix" jet-form="user">
+      <div id="headLeft">
+        <img src="assets/images/read_book.png" alt="" />
+        <span class="fc-y fz-3">小芝妈咪</span>
+      </div>
+      <div id="headRight">
+        <img class="decr-img" src="assets/images/crown.png" alt="" />
+        <div class="user-photo"></div>
+        <span class="bg-w2 center" jet-name="nickName">用户名</span>
+      </div>
+    </div>
+    <div class="body">
+      <div class="item clearfix" onclick="J.show('Baby精彩，敬请期待','info')">
+        <div class="item-name fc-o fz-3 bg-w2">Baby Show</div>
+        <img class="item-img" src="assets/images/hello.png"/>
+      </div>
+      <div class="item clearfix book1000">
+        <div class="item-name fc-o fz-3 bg-w2">1000 Books</div>
+        <img class="item-img" src="assets/images/chick.png"/>
+      </div>
+      <div class="item clearfix" onclick="J.show('辣妈精彩，敬请期待','info')">
+        <div class="item-name fc-o fz-3 bg-w2">辣妈特权</div>
+        <img class="item-img" src="assets/images/vip.png"/>
+      </div>
+      <div class="item clearfix" onclick="J.jump('unlock_course.html')">
+        <div class="item-name fc-o fz-3 bg-w2">课程激活</div>
+        <img class="item-img" src="assets/images/unlock.png"/>
+      </div>
+      <div class="item clearfix" onclick="J.jump('mod_info.html')">
+        <div class="item-name fc-o fz-3 bg-w2">账户设置</div>
+        <img class="item-img" src="assets/images/cup.png"/>
+      </div>
+    </div>
+    <div id="footer">
+      <div class="footer-item" onclick="J.jump('course_main.html')">我的课程</div>
+      <div class="footer-item" onclick="J.jump('achieve.html')">我的成就</div>
+      <div class="footer-item active">用户中心</div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+    J.ready(function(){
+      getData(null,"/link/get1000BooksLink",function(data){
+        if(data.linkSrc.substring(0,4)!="http"){
+          data.linkSrc="http://"+data.linkSrc;
+        }
+        J.class("book1000").clk(function(){
+          J.jump(data.linkSrc);
+        });
+      },true);
+      getData(null,"/user",function(d){
+        if(d.headSrc==null){
+          d.headSrc=def_img;
+        }
+        setUserPhoto(d.headSrc);
+        J.jetForm("user").set(d);
+      },true);
+    });
+    </script>
+  </body>
+</html>

@@ -53,7 +53,8 @@ public class UserServiceImpl implements UserService {
 			throw new ParameterException("密码为空");
 		}
 		if (user.getNickName() == null || user.getNickName().equals("")) {
-			throw new ParameterException("宝宝昵称为空");
+//			throw new ParameterException("宝宝昵称为空");
+			user.setNickName("");
 		}
 		if (user.getGender() == null || !(user.getGender().equals("F") || user.getGender().equals("M")) ) {
 			throw new ParameterException("性别错误");
@@ -65,7 +66,8 @@ public class UserServiceImpl implements UserService {
 			throw new ParameterException("城市为空");
 		}
 		if (user.getParent() == null || user.getParent().equals("")) {
-			throw new ParameterException("身份为空");
+//			throw new ParameterException("身份为空");
+			user.setParent("");
 		}
         User userExisted = userRepository.findByPhone(user.getPhone());
         if (userExisted != null) {

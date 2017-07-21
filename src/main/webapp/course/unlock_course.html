@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>课程激活</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/regist.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/unlock_course.css"/>
+  </head>
+  <body>
+    <div id="forBg"></div>
+    <div id="mainWrapper" jet-form="userCourseCode" class="bg-w1">
+      <img class="decr-img" id="registDecSun" src="assets/images/sun.png" alt="" />
+      <div id="registTitle" class="fz-2 fc-o">课程激活</div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w">激活码</span></div>
+        <div class="regist-part-r"><input type="text" jet-name="courseCodeStr" jet-valid="length[24]" class="c-input"/></div>
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">密&nbsp;&nbsp;码</span></div>
+        <div class="regist-part-r"><input type="text" jet-name="password" jet-valid="length[8]" class="c-input"/></div>
+      </div>
+      <div class="regist-item relative">
+        <div class="c-btn fc-b" onclick="userCourseCode()">提交</div>
+        <img class="decr-img" id="registDecFlower" src="assets/images/flower_double.png" alt="" />
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      function userCourseCode(){
+        J.jetForm("userCourseCode").validate(function(data,obj){
+          J.showWait("正在激活课程...");
+          data.courseCodeStr+=data.password;
+          delete data.password;
+          postData(data,"/course/useCourseCode",function(){
+            J.show("课程激活成功");
+            obj.clear();
+          })
+        });
+      }
+    </script>
+  </body>
+</html>

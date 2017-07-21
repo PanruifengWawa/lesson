@@ -63,7 +63,8 @@ public class CourseController {
     *			"isFree": 1,
     *			"type": 4,
     *			"createDate": 1498491339000,
-    *			"link": "link"
+    *			"link": "link",
+    *			"state": 0 //0-未开课,1-已开课
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -101,6 +102,57 @@ public class CourseController {
 	}
 	
 	/**
+	* @api {post} api/course/{courseId}/changeState 修改课程状态（管理员）
+	* @apiName course_changeState
+	* @apiGroup course
+	* @apiHeader {String} token 身份凭证
+	*
+	* @apiParam {Long} courseId * 课程id（必须）
+	* @apiParam {int} state * 课程状态（必须,0-未开课,1-已开课）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": null,
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{courseId}/changeState", method = RequestMethod.POST)
+	@ResponseBody
+	public DataWrapper<Void> changeState(
+			@PathVariable Long courseId,
+			@RequestParam(value = "state", required = true) Integer state,
+			HttpServletRequest request
+			) {
+		
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		
+		return courseService.changeState(courseId, state);
+	}
+	
+	/**
 	* @api {get} api/course/getCourseList 获取课程列表（管理员）
 	* @apiName course_getCourseListFromAdmin
 	* @apiGroup course
@@ -123,7 +175,8 @@ public class CourseController {
     *			"isFree": 1,
     *			"type": 4,
     *			"createDate": 1498491339000,
-    *			"link": "link"
+    *			"link": "link",
+    *			"state": 1
     *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -287,7 +340,8 @@ public class CourseController {
     *			"isFree": 1,
     *			"type": 4,
     *			"createDate": 1498491339000,
-    *			"link": "link"
+    *			"link": "link",
+    *			"state": 1
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -347,7 +401,8 @@ public class CourseController {
     *        			"isFree": 1,
     *        			"type": 4,
     *        			"createDate": 1498491339000,
-    *        			"link": "link"
+    *        			"link": "link",
+    *        			"state": 1
     *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -404,7 +459,8 @@ public class CourseController {
     *        			"type": 4,
     *        			"createDate": 1498491339000,
     *        			"link": "link",
-    *        			"isBought" : 1//是否已购买
+    *        			"isBought" : 1,//是否已购买
+    *        			"state": 1,
     *		}],
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -463,7 +519,8 @@ public class CourseController {
     *			"imgSrc": "imgSrc",
     *			"name": "Lesson7-8:测试",
     *			"courseId": 3,
-    *			"courseContent": null
+    *			"courseContent": null,
+    *			"state": 0,
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -519,16 +576,19 @@ public class CourseController {
     *			"imgSrc": "imgSrc12",
     *			"name": "lesson1-10:大课程",
     *			"courseId": 8,
+    *			"state": 1,
     *			"courseContent": [
     *				{
     *					"courseContentId": 13,
     *					"name": "lesson1",
-    *					"subName":""
+    *					"subName":"",
+    *					"state": 1
     *				},
     *				{
     *					"courseContentId": 14,
     *					"name": "lesson2",
-    *					"subName": ""
+    *					"subName": "",
+    *					"state": 1
     *				}
     *			]
     *		},
@@ -537,6 +597,7 @@ public class CourseController {
     *			"imgSrc": "abc",
     *			"name": "lesson11-20",
     *			"courseId": 8,
+    *			"state": 1,
     *			"courseContent": []
     *		}],
   	*		"token": null,
@@ -622,6 +683,60 @@ public class CourseController {
 		return courseService.updateCourseArrangement(courseArrangementId, courseArrangement);
 	}
 	
+	
+	/**
+	* @api {post} api/course/{courseId}/arrangement/{courseArrangementId}/changeState 修改课程安排状态（管理员）
+	* @apiName course_changeState_arrangement
+	* @apiGroup course_arrangement
+	* @apiHeader {String} token 身份凭证
+	*
+	* @apiParam {Long} courseId * 课程id（必须）
+	* @apiParam {Long} courseArrangementId * 课程安排id（必须）
+	* @apiParam {int} state * 课程安排状态（必须,0-未开课,1-已开课）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": null,
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/changeState", method = RequestMethod.POST)
+	@ResponseBody
+	public DataWrapper<Void> changeArrangementState(
+			@PathVariable Long courseId,
+			@PathVariable Long courseArrangementId,
+			@RequestParam(value = "state", required = true) Integer state,
+			HttpServletRequest request
+			) {
+		
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		
+		return courseService.changeArrangementState(courseArrangementId, state);
+	}
+	
 	/**
 	* @api {delete} api/course/{courseId}/arrangement/{courseArrangementId} 删除课程安排（管理员）
 	* @apiName course_arrangement_delete
@@ -692,11 +807,13 @@ public class CourseController {
     *			"imgSrc": "imgSrc12",
     *			"name": "lesson1-10:大课程",
     *			"courseId": 3,
+    *			"state": 1,
     *			"courseContent": [//这个字段你不要管，是我用的框架级联出来的
     *				{
     *					"courseContentId": 13,
     *					"name": "lesson1",
-    *					"subName":""
+    *					"subName":"",
+    *					"state": 1,
     *				}
     *			]
     *		},
@@ -765,7 +882,8 @@ public class CourseController {
     *			"courseId": 3,
     *			"courseArrangementId": 1,
     *			"bookName": "测试书籍2",
-    *			"bookImgSrc": "http://www.baidu.com"
+    *			"bookImgSrc": "http://www.baidu.com",
+    *			"state": 1,
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,
@@ -858,6 +976,61 @@ public class CourseController {
 		return courseService.deleteCourseContent(courseContentId);
 	}
 	
+	/**
+	* @api {post} api/course/{courseId}/arrangement/{courseArrangementId}/content/{courseContentId}/changeState 修改课程内容状态（管理员）
+	* @apiName course_changeState_content
+	* @apiGroup course_content
+	* @apiHeader {String} token 身份凭证
+	*
+	* @apiParam {Long} courseId * 课程id（必须）
+	* @apiParam {Long} courseArrangementId * 课程安排id（必须）
+	* @apiParam {Long} courseContentId * 课程安排id（必须）
+	* @apiParam {int} state * 课程安排状态（必须,0-未开课,1-已开课）
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": null,
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "{courseId}/arrangement/{courseArrangementId}/content/{courseContentId}/changeState", method = RequestMethod.POST)
+	@ResponseBody
+	public DataWrapper<Void> changeContentState(
+			@PathVariable Long courseId,
+			@PathVariable Long courseArrangementId,
+			@PathVariable Long courseContentId,
+			@RequestParam(value = "state", required = true) Integer state,
+			HttpServletRequest request
+			) {
+		
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		
+		return courseService.changeContentState(courseContentId, state);
+	}
+	
 	
 	/**
 	* @api {post} api/course/{courseId}/arrangement/{courseArrangementId}/content/{courseContentId} 修改课程内容（管理员）
@@ -879,7 +1052,7 @@ public class CourseController {
 	* 	{
   	*		"callStatus": "SUCCEED",
   	*		"errorCode": "成功",
-  	*		"data": [],
+  	*		"data": null,
   	*		"token": null,
   	*		"numberPerPage": 0,
 	*  		"currentPage": 0,
@@ -945,7 +1118,8 @@ public class CourseController {
     *			"courseId": 3,
     *			"courseArrangementId": 1,
     *			"bookName": "测试书籍2",
-    *			"bookImgSrc": "http://www.baidu.com"
+    *			"bookImgSrc": "http://www.baidu.com",
+    *			"state": 1
     *		},
   	*		"token": null,
   	*		"numberPerPage": 0,

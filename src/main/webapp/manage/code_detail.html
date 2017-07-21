@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>激活码详情</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/user.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/code.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item" onclick="J.jump('user.html')"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item active" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item" onclick="J.jump('book_link.html')"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item" onclick="J.jump('mod_info.html')"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">激活码管理 &gt; 激活码详情
+          <div class="c-btn l" onclick="J.back()">
+            <span class="glyphicon glyphicon-chevron-left"></span>返回上一级
+          </div>
+          <div class="c-btn l mr-s" onclick="geneCodeOpen()">
+            <span class="glyphicon glyphicon-plus"></span>生成激活码
+          </div>
+        </div>
+        
+        <div class="main-title no-border">
+          <span id="listTitle">某课程的激活码列表</span>
+          <span id="totalNum">（共0个）</span>
+        </div>
+        <div class="table" id="codeTable" b-loop="code" b-callback="addHead()">
+          <div class="t-i">
+            <div class="t-ii">{{each.courseCodeStr.substring(0,24)}}</div>
+            <div class="t-ii">{{each.courseCodeStr.substring(24)}}</div>
+            <div class="t-ii {{(each.isUsed==1)?'fc-r':'fc-g'}}">{{(each.isUsed==1)?'已使用':'未使用'}}</div>
+            <div class="t-ii">{{getDateByStamp(each.useDate)}}</div>
+            <div class="t-ii pointer" b-callback="setClick(this,{{each.isUsed}},{{each.userId}})">{{(each.isUsed==1)?each.userId:'无'}}</div>
+            <div class="t-ii"><div class="c-btn bg-r" onclick="deleteCode(this)">删除激活码</div></div>
+            <div class="hide">{{each.courseCodeId}}</div>
+          </div>
+        </div>
+        <div class="table-page">
+          <span class="p-item" onclick="jump('first')">首页</span>
+          <span class="p-item" onclick="jump('prev')">上一页</span>
+          <span class="p-text"><span class="cur-page">1</span>/<span class="total-page">1</span></span>
+          <span class="p-item" onclick="jump('next')">下一页</span>
+          <span class="p-item" onclick="jump('last')">末页</span>
+          <input type="number" class="c-input" jet-valid="number null"/>
+          <span class="c-btn" onclick="jump(this.prev().val())">跳转</span>
+        </div>
+        
+      </div>
+    </div>
+    <div id="addWrapper" class="">
+      <div class="add-box">
+        <div id="addTitle" class="a-title">添加小标题</div>
+        <div jet-form="userInfo">
+          <span class="glyphicon glyphicon-remove" onclick="closeAdd()"></span>
+          <div class="table user">
+            <div class="t-i">
+              <div class="t-ii">用户头像</div>
+              <div class="t-ii"><img src="assets/images/t_photo.png" jet-name="headSrc" jet-set="attr:src" alt="" /></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">注册手机号</div>
+              <div class="t-ii" jet-name="phone"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">注册身份</div>
+              <div class="t-ii" jet-name="parent"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">注册时间</div>
+              <div class="t-ii" jet-name="registerDate"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">宝宝昵称</div>
+              <div class="t-ii" jet-name="nickName"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">宝宝性别</div>
+              <div class="t-ii" jet-name="gender"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">出生年月</div>
+              <div class="t-ii" jet-name="birthday"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">阅读绘本数</div>
+              <div class="t-ii" jet-name="readCount"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">已购课程数</div>
+              <div class="t-ii" jet-name="courseCount"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">所在城市</div>
+              <div class="t-ii" jet-name="city"></div>
+            </div>
+            <div class="t-i">
+              <div class="t-ii">备注</div>
+              <div class="t-ii" jet-name="note"></div>
+            </div>
+          </div>
+        </div>
+        <div jet-form="geneCode">
+          <span class="glyphicon glyphicon-remove" onclick="closeGeneCode()"></span>
+          <div class="a-item">
+            输入生成数量：<input type="number" jet-name="num" jet-valid="range[1,100]" class="c-input"/>
+          </div>
+          <div class="a-item">
+            <div class="c-btn" onclick="geneCode()">确认生成</div>
+            <div class="c-btn bg-r" onclick="closeGeneCode()">取消</div>
+          </div>
+          <div class="a-item">生成激活码结果</div>
+          <div class="a-item">
+            <textarea readonly="true" id="codeViewArea" class="c-input" onclick="selectAllCode(this)"></textarea>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      var id=urlParam().id.split('_')[0];
+      var name=urlParam().id.split('_')[1];
+      var index=1;
+      var totalPage;
+      J.ready(function(){
+        getCodeList();
+        J.id("listTitle").txt("'"+name+"'的激活码列表")
+      });
+      function getCodeList(){
+        J.id("codeTable").empty();
+        addHead();
+        J.showWait("正在加载...");
+        getData({
+          numberPerPage:10,
+          currentPage:index
+        },"/course/"+id+"/courseCode",function(data,d){
+          J.show("加载成功");
+          index=d.currentPage;
+          J.class("cur-page").txt(index);
+          totalPage=d.totalPage;
+          J.class("total-page").txt(totalPage);
+          J.id("totalNum").txt("（共"+d.totalNumber+"个）");
+          code.init(data);
+        })
+      }
+      function closeGeneCode(){
+        closeAdd();
+        J.id("codeViewArea").val("");
+      }
+      function geneCodeOpen(){
+        showAdd("生成'"+name+"'的激活码","geneCode");
+      }
+      function geneCode(){
+        J.jetForm("geneCode").validate(function(data,obj){
+          postData(data,"/course/"+id+"/courseCode",function(d){
+            getCodeList();
+            var html="";
+            d.each(function(code){
+              html+=("激活码："+code.substring(0,24)+" &nbsp; 密码："+code.substring(24)+"\n")
+            });
+            J.id("codeViewArea").html(html);
+          })
+        });
+      }
+      function addHead(){
+        J.id("codeTable").prepend(J.new("div.t-i").html('\
+            <div class="t-ii">激活码</div>\
+            <div class="t-ii">密码</div>\
+            <div class="t-ii">使用情况</div>\
+            <div class="t-ii">使用日期</div>\
+            <div class="t-ii">使用者ID</div>\
+            <div class="t-ii">删除</div>'));
+      }
+      function selectAllCode(obj){
+        J.show("按 Ctrl + A 可以全选");
+      }
+      function setClick(obj,isUsed,userId){
+        obj.clk(function(){
+          if(isUsed==1){
+            J.showWait("正在加载用户详情...");
+            getData(null,"/user/"+userId,function(d){
+              J.show("加载完成");
+              d.gender=(d.gender=='F')?'女':'男';
+              d.birthday=getDateByStamp(d.birthday);
+              d.registerDate=getDateByStamp(d.registerDate);
+              d.note=(d.note==null)?'无':d.note;
+              J.jetForm('userInfo').set(d);
+              showAdd("用户详情","userInfo");
+            });
+          }else{
+            J.show("该激活码没有被使用。","info")
+          }
+        });
+      }
+      function deleteCode(obj){
+        J.confirm("是否确定删除该激活码？",function(){
+          J.showWait("正在删除...");
+          deleteData("/course/"+id+"/courseCode/"+obj.parent().next().txt(),function(d){
+            J.show("删除成功");
+            getCodeList();
+          });
+        });
+      }
+      function jump(str){
+        switch(str){
+          case "next":
+            if(index==totalPage){
+              J.show("已是最后一页","warn");
+            }else{
+              index++;
+              getCodeList();
+            };break;
+          case "prev":
+            if(index==1){
+              J.show("已是第一页","warn");
+            }else{
+              index--;
+              getCodeList();
+            };break;
+          case "first":index=1;getCodeList();break;
+          case "last":index=totalPage;getCodeList();break;
+          default:
+            if(str==""){
+              J.show("请输入一个数字","warn");
+            }else{
+              str=parseInt(str);
+              if(str<1||str>totalPage){
+                J.show("数字超过页数范围，请重新输入","warn");
+              }else{
+                index=str;
+                getCodeList();
+              }
+            };break;
+        }
+      }
+    </script>
+  </body>
+</html>

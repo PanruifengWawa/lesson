@@ -21,11 +21,20 @@ public class Course {
 	private Integer isFree;
 	private Integer type;
 	private Date createDate;
+	private Integer state;
 	
 	private String link;
 	private int isBought;
+	 
 	
-	
+	@Basic
+	@Column(name = "state")
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	@Transient
 	public int getIsBought() {
 		return isBought;

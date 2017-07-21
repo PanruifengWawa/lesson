@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>管理员修改密码</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/link.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item" onclick="J.jump('user.html')"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item" onclick="J.jump('book_link.html')"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item active"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">修改密码</div>
+        
+        <div class="main-title no-border">修改管理员密码</div>
+        <div id="linkWrapper" jet-form="mod">
+          <div class="mod-item">
+            输入新密码：<input type="password" jet-name="newPassword" jet-valid="notnull" class="c-input"/>
+          </div>
+          <div class="mod-item">
+            请再次输入：<input type="password" jet-name="newPasswordAgain" jet-valid="notnull" class="c-input"/>
+          </div>
+          <div class="mod-item">
+            <div class="c-btn" onclick="modPw()">确认修改</div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      function modPw(obj){
+        J.jetForm("mod").validate(function(data,obj){
+          if(data.newPasswordAgain==data.newPassword){
+            delete data.newPasswordAgain;
+            J.show("正在修改...","info");
+            postData(data,"/user/changePWD",function(){
+              J.show("修改成功");
+              obj.clear();
+            })
+          }else{
+            J.show("两次密码输入不一致","warn")
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

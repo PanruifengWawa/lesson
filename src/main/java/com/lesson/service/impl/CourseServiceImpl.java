@@ -1,6 +1,8 @@
 package com.lesson.service.impl;
 
 
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.lesson.enums.BookOrigin;
 import com.lesson.enums.CourseFreeEnum;
+import com.lesson.enums.CourseStateEnum;
 import com.lesson.enums.CourseTypeEnum;
 import com.lesson.enums.UserType;
 import com.lesson.exceptions.AuthException;
@@ -65,6 +68,7 @@ public class CourseServiceImpl implements CourseService {
 		
 		course.setCourseId(null);
 		course.setCreateDate(new Date());
+		course.setState(CourseStateEnum.Close.getCode());
 		try {
 			courseRepository.save(course);
 		} catch (Exception e) {
@@ -80,13 +84,13 @@ public class CourseServiceImpl implements CourseService {
 	public DataWrapper<List<Course>> getCourseList(Integer isFree, Integer type, Integer numberPerPage,
 			Integer currentPage) {
 		// TODO Auto-generated method stub
-		return courseRepository.getCourseList(isFree, type, numberPerPage, currentPage);
+		return courseRepository.getCourseList(null, isFree, type, numberPerPage, currentPage);
 	}
 
 	@Override
 	public DataWrapper<List<Course>> getFreeCourseList(Integer type, Integer numberPerPage, Integer currentPage) {
 		// TODO Auto-generated method stub
-		return courseRepository.getCourseList(CourseFreeEnum.Yes.getCode(), type, numberPerPage, currentPage);
+		return courseRepository.getCourseList(CourseStateEnum.Open.getCode(), CourseFreeEnum.Yes.getCode(), type, numberPerPage, currentPage);
 	}
 
 	@Override
@@ -166,6 +170,7 @@ public class CourseServiceImpl implements CourseService {
 		
 		courseArrangement.setCourseArrangementId(null);
 		courseArrangement.setCourseContent(null);
+		courseArrangement.setState(0);
 		
 		try {
 			courseArrangementRepository.save(courseArrangement);
@@ -186,21 +191,43 @@ public class CourseServiceImpl implements CourseService {
 		if (course == null) {
 			throw new AuthException("课程不存在");
 		}
+
+		if (course.getState().equals(CourseStateEnum.Close.getCode()) && (token == null || token.getUserType().equals(UserType.User.getCode()) )) {
+			throw new AuthException("课程未开放");
+		}
+		
 		DataWrapper<List<CourseArrangement>> dataWrapper = new DataWrapper<List<CourseArrangement>>();
+		Page<CourseArrangement> page = null;
 		
 		if (course.getIsFree().equals(CourseFreeEnum.Yes.getCode())) {
-			Page<CourseArrangement> page = courseArrangementRepository.findArrangementListByCourseId(courseId, null);
-			dataWrapper.setData(page.getContent());
+			page = courseArrangementRepository.findArrangementListByCourseId(courseId, null);
+//			dataWrapper.setData(page.getContent());
 		} else {
 			if (token != null) {
-				if (token.getUserType().equals(UserType.Admin.getCode()) || courseCodeRepository.findByUserIdAndCourseId(token.getUserId(), courseId) != null) {
-					Page<CourseArrangement> page = courseArrangementRepository.findArrangementListByCourseId(courseId, null);
-					dataWrapper.setData(page.getContent());
+				if (token.getUserType().equals(UserType.Admin.getCode()) || courseCodeRepository.findByUserIdAndCourseId(token.getUserId(), courseId) != null ) {
+					page = courseArrangementRepository.findArrangementListByCourseId(courseId, null);
+//					dataWrapper.setData(page.getContent());
 				} else {
 					throw new AuthException("未激活此课程");
 				}
 			} else {
 				throw new AuthException("用户未登录");
+			}
+		}
+		
+		
+		if (page != null) {
+			if ( token == null || token.getUserType().equals(UserType.User.getCode()) ) {
+				List<CourseArrangement> courseArrangements = new ArrayList<CourseArrangement>();
+				for(CourseArrangement courseArrangement : page.getContent()) {
+					if (courseArrangement.getState().equals(CourseStateEnum.Open.getCode())) {
+						courseArrangements.add(courseArrangement);
+					}
+				}
+
+				dataWrapper.setData(courseArrangements);
+			} else {
+				dataWrapper.setData(page.getContent());
 			}
 		}
 		
@@ -276,6 +303,7 @@ public class CourseServiceImpl implements CourseService {
 		}
 		
 		courseContent.setCourseContentId(null);
+		courseContent.setState(0);
 		try {
 			courseContentRepository.save(courseContent);
 		} catch (Exception e) {
@@ -335,6 +363,10 @@ public class CourseServiceImpl implements CourseService {
 			throw new AuthException("课程不存在");
 		}
 		
+		if (course.getState().equals(CourseStateEnum.Close.getCode()) && (token == null || token.getUserType().equals(UserType.User.getCode()) )) {
+			throw new AuthException("课程未开放");
+		}
+		
 		DataWrapper<CourseContent> dataWrapper = new DataWrapper<CourseContent>();
 		
 		if (course.getIsFree().equals(CourseFreeEnum.Yes.getCode())) {
@@ -345,11 +377,14 @@ public class CourseServiceImpl implements CourseService {
 			if (!courseContent.getCourseId().equals(course.getCourseId())) {
 				throw new AuthException("课程内容不属于该课程");
 			}
+			if (courseContent.getState().equals(CourseStateEnum.Close.getCode()) && (token == null || token.getUserType().equals(UserType.User.getCode())) ) {
+				throw new AuthException("课程内容未开放");
+			}
 			dataWrapper.setData(courseContent);
 		} else {
 			if (token != null) {
 				
-				if (token.getUserType().equals(UserType.Admin.getCode())) {
+				if (token.getUserType().equals(UserType.Admin.getCode())) { //admin
 					CourseContent courseContent = courseContentRepository.findByCourseContentId(courseContentId);
 					if (courseContent == null) {
 						throw new AuthException("课程内容不存在");
@@ -359,7 +394,7 @@ public class CourseServiceImpl implements CourseService {
 					}
 					
 					dataWrapper.setData(courseContent);
-				} else if (courseCodeRepository.findByUserIdAndCourseId(token.getUserId(), courseId) != null) {
+				} else if (courseCodeRepository.findByUserIdAndCourseId(token.getUserId(), courseId) != null) {//user
 					CourseContent courseContent = courseContentRepository.findByCourseContentId(courseContentId);
 					
 					if (courseContent == null) {
@@ -367,6 +402,10 @@ public class CourseServiceImpl implements CourseService {
 					}
 					if (!courseContent.getCourseId().equals(course.getCourseId())) {
 						throw new AuthException("课程内容不属于该课程");
+					}
+					
+					if (courseContent.getState().equals(CourseStateEnum.Close.getCode())) {
+						throw new AuthException("课程内容未开放");
 					}
 					
 					dataWrapper.setData(courseContent);
@@ -422,6 +461,70 @@ public class CourseServiceImpl implements CourseService {
 		// TODO Auto-generated method stub
 		
 		return courseRepository.getCourseListByUserId(userId, numberPerPage, currentPage, courseCodeRepository.countByUserId(userId).intValue());
+	}
+
+	@Override
+	public DataWrapper<Void> changeState(Long courseId, Integer state) {
+		// TODO Auto-generated method stub
+		
+		if (CourseStateEnum.parse(state) == null) {
+			throw new ParameterException("课程状态错误");
+		}
+		Course course = courseRepository.findByCourseId(courseId);
+		if (course == null) {
+			throw new AuthException("课程不存在");
+		}
+		try {
+			course.setState(state);
+			courseRepository.save(course);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new DBException("数据库错误",e);
+		}
+		DataWrapper<Void> dataWrapper = new DataWrapper<Void>();
+		return dataWrapper;
+	}
+
+	@Override
+	public DataWrapper<Void> changeArrangementState(Long courseArrangementId, Integer state) {
+		// TODO Auto-generated method stub
+		if (CourseStateEnum.parse(state) == null) {
+			throw new ParameterException("课程安排状态错误");
+		}
+		CourseArrangement courseArrangement = courseArrangementRepository.findByCourseArrangementId(courseArrangementId);
+		if (courseArrangement == null) {
+			throw new AuthException("课程安排不存在");
+		}
+		try {
+			courseArrangement.setState(state);
+			courseArrangementRepository.save(courseArrangement);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new DBException("数据库错误",e);
+		}
+		DataWrapper<Void> dataWrapper = new DataWrapper<Void>();
+		return dataWrapper;
+	}
+
+	@Override
+	public DataWrapper<Void> changeContentState(Long courseContentId, Integer state) {
+		// TODO Auto-generated method stub
+		if (CourseStateEnum.parse(state) == null) {
+			throw new ParameterException("课程内容状态错误");
+		}
+		CourseContent courseContent = courseContentRepository.findByCourseContentId(courseContentId);
+		if (courseContent == null) {
+			throw new AuthException("课程内容不存在");
+		}
+		try {
+			courseContent.setState(state);
+			courseContentRepository.save(courseContent);
+		} catch (Exception e) {
+			// TODO: handle exception
+			throw new DBException("数据库错误",e);
+		}
+		DataWrapper<Void> dataWrapper = new DataWrapper<Void>();
+		return dataWrapper;
 	}
 
 }

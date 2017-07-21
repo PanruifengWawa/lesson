@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.lesson.enums.CourseFreeEnum;
+import com.lesson.enums.CourseStateEnum;
 import com.lesson.models.Course;
 import com.lesson.repository.custom.CourseRepositoryCustom;
 import com.lesson.utils.DaoUtils;
@@ -29,7 +30,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public DataWrapper<List<Course>> getCourseList(Integer isFree, Integer type, Integer numberPerPage,
+	public DataWrapper<List<Course>> getCourseList(Integer state, Integer isFree, Integer type, Integer numberPerPage,
 			Integer currentPage) {
 		// TODO Auto-generated method stub
 
@@ -48,6 +49,9 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 		}
 		if (type != null) {
 			criteria.add(Restrictions.eq("type", type));
+		}
+		if (state != null) {
+			criteria.add(Restrictions.eq("state", state));
 		}
 		
 		criteria.setProjection(Projections.rowCount());
@@ -85,9 +89,9 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 		DataWrapper<List<Course>> dataWrapper = new DataWrapper<List<Course>>();
 		List<Course> ret = null;
 		Session session = sessionFactory.getCurrentSession();
-        String sql = "select course.course_id as courseId, course.name as name, course.img_src as imgSrc, course.is_free as isFree, course.type as type, course.link as link, course.create_date as createDate, " +
+        String sql = "select course.course_id as courseId, course.name as name, course.img_src as imgSrc, course.is_free as isFree, course.type as type, course.link as link, course.create_date as createDate,  course.state as state, " +
         			 "(case when course_code.course_code_id is null then 0 else 1 end) as isBought from " + 
-        					"(select * from t_course where type = ? and is_free = ?) course " + 
+        					"(select * from t_course where type = ? and is_free = ? and state = ?) course " + 
         							"left join " +
         					"(select * from t_course_code where user_id = ?) course_code " +
         					"on course.course_id = course_code.course_id order by isBought desc,isFree desc, create_date desc";
@@ -96,6 +100,7 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 				.addScalar("name",StandardBasicTypes.STRING)
         		.addScalar("imgSrc",StandardBasicTypes.STRING)
         		.addScalar("isFree",StandardBasicTypes.INTEGER)
+        		.addScalar("state",StandardBasicTypes.INTEGER)
         		.addScalar("type",StandardBasicTypes.INTEGER)
         		.addScalar("createDate",StandardBasicTypes.TIMESTAMP)
         		.addScalar("link",StandardBasicTypes.STRING)
@@ -120,7 +125,8 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
         try {
         	query.setParameter(0, type);
         	query.setParameter(1, CourseFreeEnum.No.getCode());
-        	query.setParameter(2, userId);
+        	query.setParameter(2, CourseStateEnum.Open.getCode());
+        	query.setParameter(3, userId);
         	ret=query.list();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -139,13 +145,14 @@ public class CourseRepositoryImpl implements CourseRepositoryCustom  {
 	@SuppressWarnings("unchecked")
 	public BigInteger getCouserCountByType(Integer type) {
 		// TODO Auto-generated method stub
-		String sql = "select count(*) from  t_course where type = ? and is_free = ?";
+		String sql = "select count(*) from  t_course where type = ? and is_free = ? and state = ?";
 		List<BigInteger> ret = null;
 		Session session = sessionFactory.getCurrentSession();
         try {
             Query query = session.createSQLQuery(sql);
             query.setParameter(0, type);
             query.setParameter(1, CourseFreeEnum.No.getCode());
+            query.setParameter(2, CourseStateEnum.Open.getCode());
             ret = query.list();
             
         } catch (Exception e) {

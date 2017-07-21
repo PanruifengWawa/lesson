@@ -14,8 +14,18 @@ public class CourseContentSub {
 	private Long courseContentId;
 	private String name;
 	private String subName;
+	private Integer state;
 	
 	
+	
+	@Basic
+	@Column(name = "state")
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	@Basic
 	@Column(name = "sub_name")
 	public String getSubName() {

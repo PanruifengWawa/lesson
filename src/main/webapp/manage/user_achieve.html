@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>查看用户成就</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/user.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/code.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item active" onclick="J.jump('user.html')"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item" onclick="J.jump('book_link.html')"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item" onclick="J.jump('mod_info.html')"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">用户管理 &gt; 查看用户阅读成就
+          <div class="c-btn l" onclick="J.back()">
+            <span class="glyphicon glyphicon-chevron-left"></span>返回上一级
+          </div>
+        </div>
+        
+        <div class="main-title no-border">
+          <span id="listTitle">某用户阅读书籍列表</span>
+          <span id="totalNum">（共0本）</span>
+        </div>
+        <div class="table" id="achieveTable" b-loop="achieve" b-callback="addHead()">
+          <div class="t-i">
+            <div class="t-ii"><img src="{{each.bookImgSrc}}" alt="" /></div>
+            <div class="t-ii">{{each.bookName}}</div>
+            <div class="t-ii">{{getDateByStamp(each.readDate)}}</div>
+            <div class="t-ii">{{(each.isCourseBook==1)?"否":"是"}}</div>
+          </div>
+        </div>
+        <div class="table-page">
+          <span class="p-item" onclick="jump('first')">首页</span>
+          <span class="p-item" onclick="jump('prev')">上一页</span>
+          <span class="p-text"><span class="cur-page">1</span>/<span class="total-page">1</span></span>
+          <span class="p-item" onclick="jump('next')">下一页</span>
+          <span class="p-item" onclick="jump('last')">末页</span>
+          <input type="number" class="c-input" jet-valid="number null"/>
+          <span class="c-btn" onclick="jump(this.prev().val())">跳转</span>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      var id=urlParam().id.split('_')[0];
+      var name=urlParam().id.split('_')[1];
+      var index=1;
+      var totalPage;
+      J.ready(function(){
+        getUserAchieveList();
+        J.id("listTitle").txt("'"+name+"'的阅读成就列表");
+      });
+      function getUserAchieveList(){
+        J.id("achieveTable").empty();
+        J.showWait("正在加载...");
+        getData({
+          numberPerPage:10,
+          currentPage:index
+        },"/user/"+id+"/book",function(data,d){
+          J.show("加载成功");
+          index=d.currentPage;
+          J.class("cur-page").txt(index);
+          totalPage=d.totalPage;
+          J.class("total-page").txt(totalPage);
+          J.id("totalNum").txt("（共"+d.totalNumber+"本）");
+          achieve.init(data);
+        })
+      }
+      function addHead(){
+        J.id("achieveTable").prepend(J.new("div.t-i").html('\
+            <div class="t-ii">书籍封面</div>\
+            <div class="t-ii">书籍名称</div>\
+            <div class="t-ii">阅读日期</div>\
+            <div class="t-ii">是否为用户添加</div>'));
+      }
+      function jump(str){
+        switch(str){
+          case "next":
+            if(index==totalPage){
+              J.show("已是最后一页","warn");
+            }else{
+              index++;
+              getUserAchieveList();
+            };break;
+          case "prev":
+            if(index==1){
+              J.show("已是第一页","warn");
+            }else{
+              index--;
+              getUserAchieveList();
+            };break;
+          case "first":index=1;getUserAchieveList();break;
+          case "last":index=totalPage;getUserAchieveList();break;
+          default:
+            if(str==""){
+              J.show("请输入一个数字","warn");
+            }else{
+              str=parseInt(str);
+              if(str<1||str>totalPage){
+                J.show("数字超过页数范围，请重新输入","warn");
+              }else{
+                index=str;
+                getUserAchieveList();
+              }
+            };break;
+        }
+      }
+    </script>
+  </body>
+</html>

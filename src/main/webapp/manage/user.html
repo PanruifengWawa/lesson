@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>用户管理</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/user.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item active"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item" onclick="J.jump('book_link.html')"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item" onclick="J.jump('mod_info.html')"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">用户管理</div>
+        <div class="main-title no-border">
+          用户列表<span id="totalNum">（共0人）</span>
+        </div>
+        <div class="table" id="userTable" b-loop="users" b-callback="addHead()">
+
+          <div class="t-i">
+            <div class="t-ii"><img src="{{each.headSrc}}" alt="" /></div>
+            <div class="t-ii">{{each.phone}}</div>
+            <div class="t-ii">{{each.parent}}</div>
+            <div class="t-ii">{{getDateByStamp(each.registerDate)}}</div>
+            <div class="t-ii">{{each.nickName}}</div>
+            <div class="t-ii">{{(each.gender=="M")?"男":"女"}}</div>
+            <div class="t-ii">{{getDateByStamp(each.birthday)}}</div>
+            <div class="t-ii">{{each.city}}</div>
+            <div class="t-ii pointer" onclick="J.jump('user_course.html?id={{each.userId}}_{{each.nickName}}')">{{each.courseCount}}</div>
+            <div class="t-ii pointer" onclick="J.jump('user_achieve.html?id={{each.userId}}_{{each.nickName}}')">{{each.readCount}}/1000</div>
+            <div class="t-ii">
+              <input type="text" class="c-input" value="{{each.note}}"/>
+              <div class="c-btn save" onclick="saveNote(this)">保存</div>
+            </div>
+            <div class="hide">{{each.userId}}</div>
+            <div class="t-ii"><div class="c-btn bg-r" onclick="deleteUser(this)">删除</div></div>
+          </div>
+          
+        </div>
+        <div class="table-page">
+          <span class="p-item" onclick="jump('first')">首页</span>
+          <span class="p-item" onclick="jump('prev')">上一页</span>
+          <span class="p-text"><span class="cur-page">1</span>/<span class="total-page">1</span></span>
+          <span class="p-item" onclick="jump('next')">下一页</span>
+          <span class="p-item" onclick="jump('last')">末页</span>
+          <input type="number" class="c-input" jet-valid="number null"/>
+          <span class="c-btn" onclick="jump(this.prev().val())">跳转</span>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      var index=1;
+      var totalPage;
+      J.ready(function(){
+        getUserList();
+      });
+      function getUserList(){
+        J.id("userTable").empty();
+        J.showWait("正在加载...");
+        getData({
+          numberPerPage:10,
+          currentPage:index
+        },"/user/getUserList",function(data,d){
+          J.show("加载成功");
+          index=d.currentPage;
+          J.class("cur-page").txt(index);
+          totalPage=d.totalPage;
+          J.class("total-page").txt(totalPage);
+          J.id("totalNum").txt("（共"+d.totalNumber+"人）");
+          users.init(data);
+        })
+      }
+      function addHead(){
+        J.id("userTable").prepend(J.new("div.t-i").html('\
+            <div class="t-ii">用户头像</div>\
+            <div class="t-ii">注册手机号</div>\
+            <div class="t-ii">注册身份</div>\
+            <div class="t-ii">注册时间</div>\
+            <div class="t-ii">宝宝昵称</div>\
+            <div class="t-ii">宝宝性别</div>\
+            <div class="t-ii">出生年月</div>\
+            <div class="t-ii">所在城市</div>\
+            <div class="t-ii">所购课程数量</div>\
+            <div class="t-ii">阅读成就</div>\
+            <div class="t-ii">备注</div>\
+            <div class="t-ii">删除用户</div>'));
+      }
+      function deleteUser(obj){
+        doubleConfirm("是否确定删除该用户？","该操作无法撤销，是否继续？",function(){
+          J.showWait("正在删除...");
+          deleteData("/user/"+obj.prev().txt(),function(d){
+            J.show("删除成功");
+            getUserList();
+          });
+        });
+      }
+      function saveNote(obj){
+        var txt=obj.prev().val();
+        if(txt==""){
+          J.show("请输入用户备注","warn");
+        }else{
+          J.showWait("正在修改用户备注...");
+          postData({note:txt},"/user/"+obj.parent().next().txt(),function(d){
+            J.show("修改用户备注成功");
+          });
+        }
+      }
+      function jump(str){
+        switch(str){
+          case "next":
+            if(index==totalPage){
+              J.show("已是最后一页","warn");
+            }else{
+              index++;
+              getUserList();
+            };break;
+          case "prev":
+            if(index==1){
+              J.show("已是第一页","warn");
+            }else{
+              index--;
+              getUserList();
+            };break;
+          case "first":index=1;getUserList();break;
+          case "last":index=totalPage;getUserList();break;
+          default:
+            if(str==""){
+              J.show("请输入一个数字","warn");
+            }else{
+              str=parseInt(str);
+              if(str<1||str>totalPage){
+                J.show("数字超过页数范围，请重新输入","warn");
+              }else{
+                index=str;
+                getUserList();
+              }
+            };break;
+        }
+      }
+    </script>
+  </body>
+</html>

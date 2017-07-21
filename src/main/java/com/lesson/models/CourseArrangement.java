@@ -21,8 +21,19 @@ public class CourseArrangement {
 	private String imgSrc;
 	private String name;
 	private Long courseId;
+	private Integer state;
 	private List<CourseContentSub> courseContent;
 	
+	
+	
+	@Basic
+	@Column(name = "state")
+	public Integer getState() {
+		return state;
+	}
+	public void setState(Integer state) {
+		this.state = state;
+	}
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_arrangement_id")

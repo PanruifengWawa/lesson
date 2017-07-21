@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>添加已读绘本</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/regist.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/add_book.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/mobi.css"/>
+  </head>
+  <body class="common">
+    <div id="forBg"></div>
+    <div id="mainWrapper" jet-form="addBook" class="bg-w1">
+      <img class="decr-img" id="registDecSun" src="assets/images/sun.png" alt="" />
+      <div id="registTitle" class="fz-2 fc-g"><img class="plus" src="assets/images/add.png" alt="" /> 添加已读绘本</div>
+      <div class="clearfix regist-item relative upload-w">
+        <div class="c-btn upload-book" onclick="this.next().click()">点击上传绘本封面</div>
+        <input type="file" id="file" accept="image/*" capture="camera" name="file" class="hide" onchange="uploadCover()"/>
+        <img src="assets/images/read_book.png" jet-name="bookImgSrc" jet-get="attr:src" jet-set="attr:src" class="ub-img" alt="" />
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">绘本名称</span></div>
+        <div class="regist-part-r"><textarea line="3" jet-name="bookName" jet-valid="notnull" class="c-input"></textarea></div>
+      </div>
+      <div class="clearfix regist-item">
+        <div class="regist-part-l"><span class="fz-3 fc-w l-s">阅读时间</span></div>
+        <div class="regist-part-r"><input type="text" jet-name="readDateStr" class="c-input"/></div>
+      </div>
+      <div class="regist-item relative">
+        <div class="c-btn fc-b" onclick="addBook()">确认添加</div>
+        <img class="decr-img" id="registDecFlower" src="assets/images/flower_double.png" alt="" />
+      </div>
+    </div>
+    <div id="footer">
+      <div class="footer-item" onclick="J.jump('course_main.html')">我的课程</div>
+      <div class="footer-item active" onclick="J.jump('achieve.html')">我的成就</div>
+      <div class="footer-item" onclick="J.jump('user_center.html')">用户中心</div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript" src="assets/js/mobi.js"></script>
+    <script type="text/javascript">
+    var cover=false;
+    var def="assets/images/read_book.png";
+    J.ready(function(){
+      bindDate("readDateStr");
+    });
+    function uploadCover(){
+      upload(function(src){
+        J.id("file").prev().txt("已上传(点击重新上传)");
+        J.id("file").next().attr("src",src);
+        cover=true;
+      })
+    }
+    function addBook(){
+      J.jetForm("addBook").validate(function(data,obj){
+        if(!cover){
+          J.confirm("您未上传封面，是否使用默认图标？",function(){
+            addBookRequest(J.jetForm("addBook").get(),obj);
+          });
+        }else{
+          addBookRequest(data,obj);
+        }
+      });
+    }
+    function addBookRequest(data,obj){
+      postData(data,"/book",function(){
+        J.show("添加成功");
+        obj.clear();
+        J.jetName("bookImgSrc").attr("src",def);
+        J.id("file").prev().txt("点击上传绘本封面");
+      })
+    }
+    </script>
+  </body>
+</html>

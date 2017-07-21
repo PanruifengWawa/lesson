@@ -1,0 +1,16 @@
+.course-item{
+  height: 100px;
+  width: 14.66666666666%;
+}
+.course-intro{
+  padding: 10px 0;
+  text-align: center;
+}
+#codeViewArea{
+  width: 75%;
+  height: 250px!important;
+  color: #666;
+}
+.course-intro.red{
+  background-color:rgba(250,100,100,.5);
+}

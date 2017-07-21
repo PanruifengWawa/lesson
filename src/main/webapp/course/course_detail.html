@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>课程章节</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_list.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_detail.css"/>
+  </head>
+  <body class="common" jet-form="content">
+    <div id="forBg"></div>
+    <div id="title" class="bold bg-w2">
+      <div class="main-t" jet-name="name">name</div>
+      <div class="small-t" jet-name="subName">subName</div>
+      <img class="decr-img" src="assets/images/star.png" alt="" />
+    </div>
+    <div id="courseList" jet-name="content" jet-set="html">
+      <!-- <div class="cl-item" onclick="toggleCourse(this)"> -->
+        <!-- <img class="cl-i-img" src="assets/images/t_photo.png" alt="" /> -->
+        <!-- <div class="cl-i-text m-intro-item bg-w2"> -->
+          <!-- <div class="m-intro-head"></div> -->
+          <!-- <div class="m-intro-text">测试测试测试测试</div> -->
+        <!-- </div> -->
+      <!-- </div> -->
+      <!-- <div class="cl-lesson" > -->
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <div class="cl-l-item m-intro-item bg-w3"> -->
+            <!-- <div class="m-intro-head"></div> -->
+            <!-- <div class="m-intro-text">测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试</div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <img class="cl-i-img" src="assets/images/t_photo.png" alt="" /> -->
+          <!-- <div class="cl-l-item m-intro-item"> -->
+            <!-- <div class="audio" onclick="toggleAudio(this)"> -->
+              <!-- <audio src="assets/raw/test.mp3" preload="auto"></audio> -->
+              <!-- <span class="audio-cur">00:00</span> / -->
+              <!-- <span class="audio-all">00:00</span> -->
+              <!-- <img class="audio-img" src="assets/images/audio.png"/> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <img class="cl-i-img" src="assets/images/t_photo.png" alt="" /> -->
+          <!-- <div class="cl-l-item m-intro-item"> -->
+            <!-- <div class="audio" onclick="toggleAudio(this)"> -->
+              <!-- <audio src="assets/raw/test.mp3" preload="auto"></audio> -->
+              <!-- <span class="audio-cur">00:00</span> / -->
+              <!-- <span class="audio-all">00:00</span> -->
+              <!-- <img class="audio-img" src="assets/images/audio.png"/> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <div class="cl-l-item m-intro-item bg-w3"> -->
+            <!-- <div class="cl-l-single"> -->
+              <!-- <div class="m-intro-head"></div> -->
+              <!-- <div class="m-intro-text">测试测试测试测试测试测测试测试测试测试测测试测试</div> -->
+            <!-- </div> -->
+            <!-- <div class="cl-l-single"> -->
+              <!-- <div class="m-intro-head"></div> -->
+              <!-- <div class="m-intro-text">测试测试测试</div> -->
+            <!-- </div> -->
+            <!-- <div class="cl-l-single"> -->
+              <!-- <div class="m-intro-head"></div> -->
+              <!-- <div class="m-intro-text">测试测试测试</div> -->
+            <!-- </div> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <div class="cl-l-item iv m-intro-item bg-w3"> -->
+            <!-- <img class="l-img" src="assets/images/t_photo.png" alt="" /> -->
+          <!-- </div> -->
+        <!-- </div> -->
+        
+        <!-- <div class="cl-l-w no-border"> -->
+          <!-- <div class="cl-l-item iv m-intro-item bg-w3"> -->
+            <!-- <video class="l-video" controls src="assets/raw/test.mp4" ></video> -->
+          <!-- </div> -->
+        <!-- </div> -->
+      <!-- </div> -->
+      
+    </div>
+    
+    
+    <div id="zoomImageCover" class="cover display-none">
+      <div class="page">
+        <div class="pinch-zoom">
+          <img id="zoomImage" src=""/>
+        </div>
+      </div>
+      <img class="cover-close" src="assets/images/confirm_cancel.png" alt=""  onclick="this.parent().fadeOut()"/>
+    </div>
+    
+    <div id="footer">
+      <div class="footer-item active" onclick="J.jump('course_main.html')">我的课程</div>
+      <div class="footer-item" data-visit="true" onclick="J.jump('achieve.html')">我的成就</div>
+      <div class="footer-item" data-visit="true" onclick="J.jump('user_center.html')">用户中心</div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript" src="assets/js/pinchzoom.js"></script>
+    <script type="text/javascript">
+      var params=urlParam().id.split("_");
+      var id=params[0];
+      var a_id=params[1];
+      var c_id=params[2];
+      var type=params[3];
+      J.ready(function(){
+        loadContent();
+        if(visit()){
+          J.tag("title").txt("1000Books体验课");
+        }
+        J.id("title").findClass("decr-img").attr("src",getTypeImg(type));
+        J.id("zoomImageCover").clk("J.id('zoomImageCover').fadeOut()");
+      });
+      function loadContent(){
+        getData(null,"/course/"+id+"/arrangement/"+a_id+"/content/"+c_id,function(d){
+          J.jetForm("content").set(d);
+          
+          J.class("cl-item").attr("onclick","toggleCourse(this)")
+          J.class("l-img").attr("onclick","showPhoto(this)")
+          initAudio();
+          $('div.pinch-zoom').each(function () {
+            new RTP.PinchZoom($(this), {});
+          });
+          J.id("courseList").findClass("l-img").clk("bindZoom(this)");
+          checkHeadImgCenter();
+        });
+      }
+      
+      function bindZoom(obj){
+        J.id("zoomImage").attr("src",obj.attr("src"));
+        var rate=obj.hei()/obj.wid();
+        var height=rate*J.width();
+        var top=(J.height()-height)/2;
+        if(top<0){
+          //alert(1)
+          var width=J.height()/rate;
+          J.class("pinch-zoom-container").css("margin-top","0px");
+          J.id("zoomImage").css({
+            "height":(J.height()-10)+"px",
+            "width":width+"px",
+            "margin":"5px "+(J.width()-width)/2+"px"
+          });
+        }else{
+          J.class("pinch-zoom-container").css("margin-top",top+"px");
+          J.id("zoomImage").css({
+            "height":"100%",
+            "width":"98%",
+            "margin":"0 1%"
+          });
+        }
+        J.id("zoomImageCover").fadeIn();
+      }
+      function toggleCourse(obj){
+        var n=obj.next();
+        if(n!=undefined){
+          $(n).slideToggle();
+        }
+      }
+      function showPhoto(obj){
+        J.class("cover").css("background-image","url('"+obj.attr("src")+"')").fadeIn();
+      }
+      function initAudio(item){
+        if(item==undefined){
+          var list=J.tag("audio");
+          if(list!=undefined&&list.length>0){
+            list.each(function(item){
+              initAudio(item)
+            });
+          }
+        }else{
+          initAudioTime(item);
+          if(item.onloadedmetadata===undefined){
+            item._t=setInterval(function(){
+              inter(item);
+            },100);
+          }else{
+            item.onloadedmetadata=function(){initAudioTime(item)}
+          }
+        }
+      }var timer,t;
+      var update=true;
+      function inter(item){
+        if(item.duration.toString()!="NaN"){
+          initAudioTime(item);
+          clearInterval(item._t);
+          item._t=undefined;
+        }
+      }
+      function toggleAudio(obj){
+        var audio=obj.findTag("audio");
+        if(audio.paused){
+          inactiveAudio();
+          audio.addClass("active").play();
+          obj.findClass("audio-img").twinkle();
+          t=setInterval(function(){
+            resetAutoTime.call(audio);
+          },1000);
+        }else{
+          clearInterval(t);
+          audio.removeClass("active").pause();
+          obj.findClass("audio-img").stopTwinkle(true);
+        }
+      }
+      function inactiveAudio(){
+        var obj=J.select("audio.active");
+        if(obj.length!=0){
+          obj.removeClass("active").pause();
+          obj.currentTime=0;
+          obj.parent().findClass("audio-cur").txt("0:00");
+          obj.parent().findClass("audio-img").stopTwinkle(true);
+        }
+        //onloadedmetadata ="initAudioTime(this)" timeupdate="resetAutoTime(this)"
+      }
+      function initAudioTime(obj){
+        var time=obj.duration;
+        if(time.toString()=="NaN"){
+          time=0;
+        }
+        var min=Math.floor(time/60);
+        var sec=Math.round(time%60);
+        if(sec<10){
+          sec="0"+sec;
+        }
+        obj.parent().findClass("audio-all").txt(min+":"+sec);
+        if(min<10){
+          obj.parent().findClass("audio-cur").txt("0:00");
+        }else{
+          obj.parent().findClass("audio-cur").txt("00:00");
+        }
+        //if(obj.ontimeupdate!==undefined){
+        //  obj.ontimeupdate = resetAutoTime;
+        //}else{
+          update=false;
+        //}
+      }
+      function resetAutoTime(){
+        var time=this.currentTime;
+        if(time+1>=this.duration){
+          this.parent().findClass("audio-img").stopTwinkle(true);
+        }
+        var min=Math.floor(time/60);
+        var sec=Math.round(time%60);
+        if(sec<10){
+          sec="0"+sec;
+        }
+        if(sec.toString()=="NaN"){
+          sec="00";
+        }
+        this.parent().findClass("audio-cur").txt(min+":"+sec);
+        
+        if(this.data("set_d")!=true){
+          this.data("set_d",true);
+          time=this.duration;
+          if(time.toString()=="NaN"){
+            time=60;
+          }
+          var min=Math.floor(time/60);
+          var sec=Math.round(time%60);
+          this.parent().findClass("audio-all").txt(min+":"+sec);
+        }
+      }
+      function getTypeImg(type){
+        var img="assets/images/";
+        switch(parseInt(type)){
+          case 3:img+="star.png";break;
+          case 2:img+="moon.png";break;
+          case 1:img+="sun.png";break;
+          case 4:img+="cup.png";break;
+          default:;break;
+        }
+        return img;
+      }
+      function checkHeadImgCenter(){
+        J.class("cl-i-img").each(function(item){
+          var h=item.next().hei();
+          if(h>43){
+            item.css("top","+="+((h-40)/2)+"px");
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

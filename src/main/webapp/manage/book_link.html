@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>修改1000Books链接</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/link.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item" onclick="J.jump('user.html')"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item active"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item" onclick="J.jump('mod_info.html')"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">1000Books</div>
+        
+        <div class="main-title no-border">修改 1000Books 跳转链接</div>
+        <div id="linkWrapper" jet-form="link">
+          1000Books 链接：<input type="text" jet-name="linkSrc" disabled class="c-input"/>
+          <span class="hide" jet-name="linkId"></span>
+          <div class="c-btn" onclick="toggleSave(this)">修改</div>
+        </div>
+        
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      J.ready(function(){
+        getData(null,"/link/get1000BooksLink",function(data){
+          if(data.linkSrc.substring(0,4)!="http"){
+            data.linkSrc="http://"+data.linkSrc;
+          }
+          J.jetForm("link").set(data);
+        });
+      });
+      function toggleSave(obj){
+        var par=obj.parent();
+        if(obj.txt()=="修改"){
+          undisable(par);
+          obj.txt("保存");
+          edit();
+        }else if(obj.txt()=="保存"){
+          if(J.jetName("linkSrc")!=""){
+            J.showWait("正在保存...");
+            var data=J.jetForm("link").get();
+            data.linkSrc=data.linkSrc.trim();
+            postData(data,"/link/update",function(d){
+              J.show("保存成功");
+              disable(par);
+              obj.txt("修改");
+              editDone();
+            });
+          }else{
+            J.show("链接不可为空")
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

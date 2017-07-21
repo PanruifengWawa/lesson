@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta charset='utf-8'>
+    <meta name="keywords" content="">  
+    <meta name="description" content="">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta content="telephone=no" name="format-detection">
+    <title>课程章节管理</title>
+    <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/course_main.css"/>
+  </head>
+  <body>
+    <div class="head">
+      <div class="c-w">
+        <span class="head-title">小芝妈咪后台管理系统</span>
+        <div id="userName"><span class="glyphicon glyphicon-user"></span><span id="adminName">用户</span></div>
+        <div id="logout" class="c-btn bg-r" onclick="logout()">退出登录</div>
+      </div>
+    </div>
+    <div class="body clearfix">
+      <div class="main-left">
+        <div class="index-item active" onclick="J.jump('course_main.html')"><span class="glyphicon glyphicon-book"></span>课 程 管 理</div>
+        <div class="index-item" onclick="J.jump('user.html')"><span class="glyphicon glyphicon-user"></span>用 户 管 理</div>
+        <div class="index-item" onclick="J.jump('code.html')"><span class="glyphicon glyphicon-th"></span>激活码管理</div>
+        <div class="index-item" onclick="J.jump('book_link.html')"><span class="glyphicon glyphicon-link"></span>1000Books</div>
+        <div class="index-item" onclick="J.jump('mod_info.html')"><span class="glyphicon glyphicon-lock"></span>修 改 密 码</div>
+      </div>
+      <div class="main-right">
+        <div class="main-title">课程管理 &gt; 课程安排 &gt; 章节管理
+          <div class="c-btn l" onclick="J.back()">
+            <span class="glyphicon glyphicon-chevron-left"></span>返回上一级
+          </div>
+          <div class="c-btn xl mr-s" onclick="addCourseCha()">
+            <span class="glyphicon glyphicon-plus"></span>添加课程章节
+          </div>
+        </div>
+        <div class="clearfix">
+          <div class="content-info" jet-form="arrInfo">
+            <div class="bold fs-3 m-2 t-left ml-n">课程安排信息</div>
+            <div class="course-iiw">
+              <span jet-tip="点击上传图片" onclick="this.next(2).click()" class="upload-plus glyphicon glyphicon-plus"></span>
+              <img class="course-img" src="assets/images/t_photo.png" jet-name="imgSrc" jet-set="attr:src" jet-get="attr:src" alt="" />
+              <input type="file" id="arrCover" onchange="uploadCover(this)" class="hide"/>
+            </div>
+            <div class="m-3 t-left">名称：<input type="text" disabled jet-name="name"  class="c-input course" value="星星课程1"/></div>
+
+            <div class="btn-w">
+              <div class="c-btn" onclick="toggleSave(this)">修改信息</div>
+              <div class="c-btn bg-r" onclick="deleteCourseArr()">删除该安排</div>
+            </div>
+          </div>
+          <div class="content cl clearfix">
+            <div class="bold fs-3 m-2 t-left ml-n">该课程安排下的所有章节</div>
+            
+            <div b-loop="courseCha">
+              <div class="cm-item" data-id="{{each.courseContentId}}">
+                <div class="text" onclick="J.jump('course_detail.html?id={{id+'_'+a_id+'_'+each.courseContentId}}')">
+                  <div>{{each.name+((each.subName=="")?"":" : "+each.subName)}}</div>
+                </div>
+                <div class="c-btn bg-r" onclick="deleteCourseCha(this)">
+                  <span class="glyphicon glyphicon-trash"></span>删除
+                </div>
+              </div>
+            </div>
+            
+            <div class="cl add" onclick="addCourseCha()">
+              <span class="glyphicon glyphicon-plus"> </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="addWrapper" class="">
+      <div class="add-box">
+        <div id="addTitle" class="a-title"></div>
+        <form jet-form="addCourseCha">
+          <div class="a-item">
+            输入标题：<input type="text" jet-name="name" jet-valid="notnull" class="c-input"/>
+          </div>
+          <div class="a-item">
+            副 标 题 ：<input type="text" jet-name="subName" class="c-input"/>
+          </div>
+          <div class="a-item">
+            对应书籍：<input type="text" jet-name="bookName" jet-valid="notnull" class="c-input"/>
+          </div>
+          <div class="a-item">
+            书籍封面：<input type="file" id="file" jet-name="bookImgSrc" jet-valid="notnull" class="c-input"/>
+          </div>
+        </form>
+        <div class="a-item">
+          <div class="c-btn" id="addBtn">确认添加</div>
+          <div class="c-btn bg-r" onclick="closeAdd()">取消</div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript" src="assets/js/jetter.min.js"></script>
+    <script type="text/javascript" src="assets/js/bql.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+      var id=urlParam().id.split('_')[0];
+      var a_id=urlParam().id.split('_')[1];
+      J.ready(function(){
+        loadCha();
+      });
+      function loadCha(){
+        getData(null,"/course/"+id+"/arrangement",function(d){
+          var a=Jql(d).select("*").where("courseArrangementId=="+a_id,true);
+          J.jetForm("arrInfo").set(a[0]);
+          courseCha.init(a[0].courseContent);
+        });
+      }
+      function uploadCover(obj){
+        upload(function(src){
+          obj.prev().attr("src",src);
+        },obj.attr("id"))
+      }
+      function addCourseCha(){
+        showAdd("添加课程内容","addCourseCha",function(data,obj){
+          upload(function(src){
+            data.bookImgSrc=src;
+            data.content=' ';
+            postData(data,"/course/"+id+"/arrangement/"+a_id+"/content",function(d){
+              J.show("添加课程内容成功");
+              courseCha.insert(d,true);
+              closeAdd();
+            });
+          });
+        });
+      }
+      function saveInfo(call,obj){
+        J.jetForm("arrInfo").validate(function(data){
+          J.showWait("正在保存...");
+          postData(data,"/course/"+id+"/arrangement/"+a_id,function(d){
+            J.show("保存成功");
+            call();
+          },true,function(){
+            obj.txt("修改信息");
+          });
+        });
+      }
+      function toggleSave(obj){
+        var par=obj.parent(2);
+        if(obj.txt()=="修改信息"){
+          undisable(par);
+          obj.txt("保存");
+          edit();
+        }else if(obj.txt()=="保存"){
+          saveInfo(function(){
+            disable(par);
+            obj.txt("修改信息");
+            editDone();
+          },obj);
+        }
+      }
+      function deleteCourseArr(obj){
+        doubleConfirm("是否确定删除该课程安排？","该操作不可撤销，是否确认？",function(){
+          deleteData("/course/"+id+"/arrangement/"+a_id,function(){
+            J.show("删除成功,即将返回上一级...");
+            delay("J.back()");
+          });
+        })
+      }
+      function deleteCourseCha(obj){
+        doubleConfirm("是否确认删除这一节？","该节下的所有内容都会被删除，是否继续？",function(){
+          var par=obj.parent();
+          J.showWait("正在删除...");
+          par.fadeOut(function(){
+            deleteData("/course/"+id+"/arrangement/"+a_id+"/content/"+par.attr("data-id"),function(){
+              J.show("删除成功");
+            });
+            par.remove();
+          });
+          
+        });
+      }
+    </script>
+    
+    
+  </body>
+</html>

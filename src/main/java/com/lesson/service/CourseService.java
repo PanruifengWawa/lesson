@@ -12,6 +12,8 @@ public interface CourseService {
 	//course
 	DataWrapper<Course> addCourse(Course course);
 	
+	DataWrapper<Void> changeState(Long courseId, Integer state);
+	
 	DataWrapper<Course> getCourseDetails(Long courseId);
 	
 	//(管理员)获取课程列表(所有)
@@ -42,6 +44,8 @@ public interface CourseService {
 	
 	DataWrapper<Void> deleteCourseArrangement(Long courseArrangementId);
 	
+	DataWrapper<Void> changeArrangementState(Long courseArrangementId, Integer state);
+	
 	//course content
 	DataWrapper<CourseContent> addCourseContent(CourseContent courseContent);
 	
@@ -50,5 +54,7 @@ public interface CourseService {
 	DataWrapper<Void> updateCourseContent(CourseContent courseContent);
 	
 	DataWrapper<CourseContent> getCourseContentDetails(Long courseId, Long courseContentId, Token token);
+	
+	DataWrapper<Void> changeContentState(Long courseContentId, Integer state);
 
 }

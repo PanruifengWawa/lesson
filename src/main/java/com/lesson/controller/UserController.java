@@ -50,8 +50,8 @@ public class UserController {
 	*
 	* @apiParam {String} phone * 手机号码（必须）
 	* @apiParam {String} password * 密码（必须）
-	* @apiParam {String} parent * 我是（必须）
-	* @apiParam {String} nickName * 宝宝昵称（必须）
+	* @apiParam {String} parent * 我是（非必须）
+	* @apiParam {String} nickName * 宝宝昵称（非必须）
 	* @apiParam {String} gender * 性别（必须,F-女,M-男）
 	* @apiParam {String} birthdayStr * 生日（必须,"yyyy-mm-dd"）
 	* @apiParam {String} city * 城市（必须）
