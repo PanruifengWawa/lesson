@@ -10,11 +10,20 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <meta name="apple-touch-fullscreen" content="yes">
     <meta content="telephone=no" name="format-detection">
-    <title>我正在使用【小芝妈咪】给宝宝学习英语，快来看一看我的阅读成就吧！</title>
+    <title>这是我在【小芝妈咪】的1000本英文阅读成就，快来加入一起挑战吧！</title>
     <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/achieve.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/course_detail.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/page.css"/>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?074a3ae03c67c779cac33a2a40e5d465";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </head>
   <body class="common">
     <img class="wc-share-logo" src="assets/images/share.png"/>
@@ -46,23 +55,40 @@
         </div>
       </div>
       <div class="clearfix n-remove">
-        <div class="ach-btn c-btn" onclick="showShare()">
+        <div class="book-store ach-btn c-btn" onclick="J.jump('https://xzmm021.baobaobooks.com/')">
+          <img src="assets/images/shopping_car.png" alt="" />
+          <span id="bookStore">去绘本店选书</span>
+        </div>
+        <div class="ach-btn c-btn" id="shareBtn" onclick="showShare()">
           <img src="assets/images/friend_circle.png" alt="" />
           <span id="shareText">分享我的成就</span>
         </div>
       </div>
     </div>
+    
+    
+    <div id="zoomImageCover" class="cover display-none">
+      <div class="page">
+        <div class="pinch-zoom">
+          <img id="zoomImage" src=""/>
+        </div>
+      </div>
+      <!-- <img class="cover-close" src="assets/images/confirm_cancel.png" alt=""  onclick="closeZoom()"/> -->
+    </div>
+    
     <div id="footer">
       <div class="footer-item" data-visit="true" onclick="J.jump('course_main.html')">我的课程</div>
       <div class="footer-item active">我的成就</div>
       <div class="footer-item" data-visit="true" onclick="J.jump('user_center.html')">用户中心</div>
     </div>
-    <div class="cover" onclick="this.fadeOut()">
+    <div class="cover share-cover" onclick="this.fadeOut()">
     </div>
     <script type="text/javascript" src="assets/js/jetter.min.js"></script>
     <script type="text/javascript" src="assets/js/bql.js"></script>
     <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript" src="assets/js/pinchzoom.js"></script>
     <script type="text/javascript" src="assets/js/page.js"></script>
+    <!-- <script type="text/javascript" src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script> -->
     <script type="text/javascript">
       var page=null;
       var index=1;
@@ -70,13 +96,19 @@
       var userId=undefined;
       var bookUrl="/book";
       allowStay=true;
+      var shareData = {
+        title: '小芝妈咪1000Books',
+        desc: '这是我在【小芝妈咪】的1000本英文阅读成就，快来加入一起挑战吧！',
+        link: window.location.href,
+        imgUrl: 'http://www.xzmm1000.com/course/assets/images/share.png'
+      };
       J.ready(function(){
         var id=urlParam().id;
-        J.class("cover").css({
-            "background-image":"url('assets/images/share_img.png')",
-            "width":J.width()+"px",
-            "height":J.height()+"px"
-          });
+        J.class("share-cover").css({
+          "background-image":"url('assets/images/share_img.png')",
+          "width":J.width()+"px",
+          "height":J.height()+"px"
+        });
         if(visit()){
           if(id==undefined){
             J.jump("regist.html");
@@ -86,31 +118,40 @@
             loadBookList();
             J.id("addBookBtn").remove();
             J.id("shareText").txt("分享TA的成就");
-            J.id("achPhoto").attr("src",urlParam().img)
+            J.id("achPhoto").attr("src",urlParam().img);
           }
         }else{
-          if(isBought()){
-            if(id==undefined){
-              getData(null,"/user",function(d){
-                if(d.headSrc==null){
-                  d.headSrc=def_img;
-                }
-                J.jump("achieve.html?id="+d.userId+"&img="+d.headSrc);
-              });
-            }else{//用户加载书籍列表
-              loadBookList();
-              getData(null,"/user",function(d){
-                if(d.headSrc==null){
-                  d.headSrc=def_img;
-                }
-                J.id("achPhoto").attr("src",d.headSrc)
-              });
+          if(id==undefined){
+            if(isBought()){
+              if(id==undefined){
+                getData(null,"/user",function(d){
+                  if(d.headSrc==null){
+                    d.headSrc=def_img;
+                  }
+                  J.jump("achieve.html?id="+d.userId+"&img="+d.headSrc);
+                });
+              }else{//用户加载书籍列表
+                loadPage();
+              }
+            }else{
+              showBoughtInfo();
             }
           }else{
-            showBoughtInfo();
+            loadPage();
           }
         }
+        
       });
+      function loadPage(){
+        loadBookList();
+        getData(null,"/user",function(d){
+          if(d.headSrc==null){
+            d.headSrc=def_img;
+          }
+          J.id("achPhoto").attr("src",d.headSrc);
+        });
+      }
+      var left_num=0;//为排序准备的中间变量，未翻页的书籍数
       function loadBookList(){
         var p_data={
           numberPerPage:50,
@@ -122,14 +163,20 @@
           n_token=false;
         }
         J.showWait("正在加载成就列表...");
-        var td=[];
+        
         getData(p_data,bookUrl,function(data,d){
           J.show("加载成功");
           index=d.currentPage;
           t_page=d.totalPage;
           setAchieveNum(d.totalNumber);
+          left_num=d.totalNumber-50*(index-1);
           appendBookWrapper(data);
-        },n_token)
+        },n_token);
+        if(visit()){
+          J.class("book-img").clk("J.jump('"+storeUrl+"')");
+        }else{
+          initPinch();
+        }
       }
       function setAchieveNum(num){
         J.id("readNum").txt(num);
@@ -140,7 +187,7 @@
         if(storeUrl==""){
           click="J.show('敬请期待...')";
         }else{
-          click="J.jump('http://"+storeUrl+"')";
+          click="J.jump('"+storeUrl+"')";
         }
         J.id("joinMe").empty().html('\
           <div class="info-text"><div>快加入阅读课堂，</div><div>创建新的成就吧！</div></div>\
@@ -156,8 +203,8 @@
       function appendBookWrapper(d){
         var obj=J.id("bookList");
         obj.empty();
-        d.group(10).each(function(item){
-          obj.append(geneBookWrapper(item));
+        d.group(10).each(function(item,i){
+          obj.append(geneBookWrapper(item,i));
         });
         if(page==null){
           page=new Page(obj,obj.parent().wid());
@@ -181,28 +228,49 @@
           page.reinit();
         }
       }
-      function geneBookWrapper(data){
+      function geneBookWrapper(data,index){
         var _w=J.new("div.page-item");
-        data.each(function(item){
-          _w.append(geneBookItem(item));
-        })
+        data.each(function(item,i){
+          var book_index=left_num-(index*10+i);
+          _w.append(geneBookItem(item,book_index));
+        });
         return _w;
       }
-      function geneBookItem(data){
+      function geneBookItem(data,book_index){
         var _w=J.new("div.book-item");
-          var _img=J.new("img.book-img").attr("src",data.bookImgSrc);
+          var _img=J.new("img.book-img.zoom-img").attr("src",data.bookImgSrc);
           var _tw=J.new("div.book-text-w");
             var _name=J.new("div.book-text.m-intro-item");
               var _nhead=J.new("div.m-intro-head");
-              var _ntext=J.new("div.m-intro-text").txt(data.bookName);
+              var name=(data.bookName.length>10)?data.bookName.substring(0,10)+"...":data.bookName;
+              var _ntext=J.new("div.m-intro-text").txt(name);
             _name.append([_nhead,_ntext]);
             var _time=J.new("div.book-text.m-intro-item");
               var _thead=J.new("div.m-intro-head");
               var _ttext=J.new("div.m-intro-text").txt(getReadDateStr(data.readDate));;
             _time.append([_thead,_ttext]);
+            var _index=J.new("span.book-index").txt(book_index);
+          _tw.append([_name,_time,_index]);
           _tw.append([_name,_time]);
         _w.append([_img,_tw]);
+        if(data.isCourseBook==0){
+          var _delete=J.new("img.delete-img").attr({
+            "src":"assets/images/delete.png",
+            "data-id":data.bookId,
+            "onclick":"deleteBook(this)"
+          });
+          _w.append(_delete);
+        }
         return _w;
+      }
+      function deleteBook(obj){
+        J.confirm("是否确认删除该绘本？",function(){
+          var id=obj.attr("data-id");
+          deleteData("/book/"+id,function(){
+            J.show("删除成功");
+            loadBookList();
+          });
+        });
       }
       var months=["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       function getReadDateStr(stamp){
@@ -213,8 +281,54 @@
         return str;
       }
       function showShare(){
-        J.class("cover").fadeIn();
+        J.class("share-cover").fadeIn();
       }
+      
+      
+      /*function wxJssdkConfig(data){
+        wx.config({
+            debug: false,
+            appId: "",
+            timestamp: nonceStr.timestamp,
+            nonceStr: data.nonceStr,
+            signature: data.signature,
+            jsApiList: [
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'onMenuShareQQ'
+            ]
+        });
+        wx.ready(function () {
+          J.id("shareBtn").clk(function(){
+            wx.onMenuShareTimeline({
+              title: shareData.title,
+              desc: shareData.desc,//
+              link: shareData.link,
+              imgUrl: shareData.imgUrl,
+              trigger: function (res) {
+                //alert('用户点击分享到朋友圈');
+              },
+              success: function (res) {
+                alert('已分享');
+              },
+              cancel: function (res) {
+                //alert('已取消');
+              },
+              fail: function (res) {
+                //alert(JSON.stringify(res));
+              }
+            });
+            //alert('已注册获取“分享到朋友圈”状态事件');
+          });
+          wx.onMenuShareAppMessage(shareData);
+          wx.onMenuShareTimeline(shareData);
+          wx.onMenuShareQQ(shareData);
+        });
+
+        wx.error(function (res) {
+          //alert(res.errMsg);
+        });
+      }*/
     </script>
   </body>
 </html>

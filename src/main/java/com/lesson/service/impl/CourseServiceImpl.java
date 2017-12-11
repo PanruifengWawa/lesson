@@ -29,6 +29,7 @@ import com.lesson.repository.CourseCodeRepository;
 import com.lesson.repository.CourseContentRepository;
 import com.lesson.repository.CourseRepository;
 import com.lesson.service.CourseService;
+import com.lesson.utils.CopyUtils;
 import com.lesson.utils.DataWrapper;
 
 @Service
@@ -168,6 +169,10 @@ public class CourseServiceImpl implements CourseService {
 			throw new ParameterException("课程安排名称为空");
 		}
 		
+		if (courseArrangement.getArrangementOrder() == null) {
+			courseArrangement.setArrangementOrder(0);
+		}
+		
 		courseArrangement.setCourseArrangementId(null);
 		courseArrangement.setCourseContent(null);
 		courseArrangement.setState(0);
@@ -238,13 +243,23 @@ public class CourseServiceImpl implements CourseService {
 	@Override
 	public DataWrapper<Void> updateCourseArrangement(Long courseArrangementId, CourseArrangement courseArrangement) {
 		// TODO Auto-generated method stub
+		CourseArrangement courseArrangementInDB = courseArrangementRepository.findByCourseArrangementId(courseArrangementId);
+		if (courseArrangementInDB == null) {
+			throw new AuthException("课程安排不存在");
+		}
+		
+		if (courseArrangement.getImgSrc() != null && !courseArrangement.getImgSrc().equals("")) {
+			courseArrangementInDB.setImgSrc(courseArrangement.getImgSrc());
+		}
+		if (courseArrangement.getName() != null && !courseArrangement.getName().equals("")) {
+			courseArrangementInDB.setName(courseArrangement.getName());
+		}
+		if (courseArrangement.getArrangementOrder() != null) {
+			courseArrangementInDB.setArrangementOrder(courseArrangement.getArrangementOrder());
+		}
+		
 		try {
-			if (courseArrangement.getImgSrc() != null && !courseArrangement.getImgSrc().equals("")) {
-				courseArrangementRepository.updateImgByCourseArrangementId(courseArrangement.getImgSrc(), courseArrangementId);
-			}
-			if (courseArrangement.getName() != null && !courseArrangement.getName().equals("")) {
-				courseArrangementRepository.updateNameByCourseArrangementId(courseArrangement.getName(), courseArrangementId);
-			}
+			courseArrangementRepository.save(courseArrangementInDB);
 		} catch (Exception e) {
 			// TODO: handle exception
 			throw new DBException("数据库错误",e);
@@ -302,6 +317,10 @@ public class CourseServiceImpl implements CourseService {
 			throw new AuthException("课程不存在");
 		}
 		
+		
+		if (courseContent.getContentOrder() == null) {
+			courseContent.setContentOrder(0);
+		}
 		courseContent.setCourseContentId(null);
 		courseContent.setState(0);
 		try {
@@ -343,6 +362,9 @@ public class CourseServiceImpl implements CourseService {
 		}
 		if (courseContent.getContent() != null && !courseContent.getContent().equals("")) {
 			courseContentInDB.setContent(courseContent.getContent());
+		}
+		if (courseContent.getContentOrder() != null) {
+			courseContentInDB.setContentOrder(courseContent.getContentOrder());
 		}
 		try {
 			courseContentRepository.save(courseContentInDB);
@@ -520,11 +542,60 @@ public class CourseServiceImpl implements CourseService {
 			courseContent.setState(state);
 			courseContentRepository.save(courseContent);
 		} catch (Exception e) {
-			// TODO: handle exception
 			throw new DBException("数据库错误",e);
 		}
 		DataWrapper<Void> dataWrapper = new DataWrapper<Void>();
 		return dataWrapper;
 	}
+
+	@Override
+	public DataWrapper<Void> copyCourse(Long courseId) {
+		// TODO Auto-generated method stub
+		Course course = courseRepository.findByCourseId(courseId);
+		if (course == null) {
+			throw new AuthException("课程不存在");
+		}
+		
+		Course newCourse = CopyUtils.copeCourse(course);
+		
+		try {
+			//copy course
+			courseRepository.save(newCourse);
+			
+			//copy course arrangement
+			Page<CourseArrangement> arragenmentPage = courseArrangementRepository.findArrangementListByCourseId(courseId, null);
+			
+			if (arragenmentPage != null && arragenmentPage.getContent() != null && arragenmentPage.getContent().size() > 0) {
+				for(CourseArrangement courseArrangementToCopy :arragenmentPage.getContent()) {
+					CourseArrangement newCourseArrangement = CopyUtils.copyCourseArrangement(courseArrangementToCopy, newCourse.getCourseId(), courseArrangementToCopy.getArrangementOrder());
+					
+					if (newCourseArrangement == null) {
+						continue;
+					}
+					courseArrangementRepository.save(newCourseArrangement);
+					Page<CourseContent> contentPage = courseContentRepository.findContentListByArrangementId(courseArrangementToCopy.getCourseArrangementId(), null);
+					
+					if (contentPage != null && contentPage.getContent() != null && contentPage.getContent().size() > 0) {
+						List<CourseContent> newCourseContentList = CopyUtils.copyCourseContentList(contentPage.getContent(), 
+								newCourse.getCourseId(), newCourseArrangement.getCourseArrangementId(), null);
+						courseContentRepository.save(newCourseContentList);
+						
+					}
+					
+				}
+				
+			}
+			
+			
+			//copy course content
+		} catch (Exception e) {
+			throw new DBException("数据库错误",e);
+		}
+		DataWrapper<Void> dataWrapper = new DataWrapper<Void>();
+		return dataWrapper;
+	}
+	
+	
+	
 
 }

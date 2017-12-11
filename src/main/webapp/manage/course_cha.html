@@ -58,16 +58,18 @@
             <div class="bold fs-3 m-2 t-left ml-n">该课程安排下的所有章节</div>
             
             <div b-loop="courseCha">
-              <div class="cm-item" data-id="{{each.courseContentId}}">
-                <div class="text" onclick="J.jump('course_detail.html?id={{id+'_'+a_id+'_'+each.courseContentId}}')">
+              <div class="cm-item {{(each.state==0)?'lock':''}}" data-id="{{each.courseContentId}}">
+                <div class="text pl-none" onclick="J.jump('course_detail.html?id={{id+'_'+a_id+'_'+each.courseContentId}}')">
                   <div>{{each.name+((each.subName=="")?"":" : "+each.subName)}}</div>
                 </div>
                 <div class="c-btn bg-r" onclick="deleteCourseCha(this)">
                   <span class="glyphicon glyphicon-trash"></span>删除
                 </div>
+                <div class="c-btn open {{(each.state==0)?'':'bg-r'}}" data-open="{{each.state}}" onclick="toggleCourse(this)">
+                  <span class="glyphicon glyphicon-cog"></span><span>{{(each.state==0)?'开课':'结课'}}</span>
+                </div>
               </div>
             </div>
-            
             <div class="cl add" onclick="addCourseCha()">
               <span class="glyphicon glyphicon-plus"> </span>
             </div>
@@ -178,6 +180,25 @@
           });
           
         });
+      }
+      function toggleCourse(obj){
+        var state=parseInt(obj.attr("data-open"));
+        var c_id=parseInt(obj.parent().attr("data-id"));
+        var t1=(state==0)?"开课":"结课";
+        var t2=(state==0)?"结课":"开课";
+        J.showWait("正在"+t1+"...");
+        obj.attr("data-open",-1);
+        postData({
+          courseId:id,
+          courseArrangementId:a_id,
+          courseContentId:c_id,
+          state:(1-state)
+        },"/course/"+id+"/arrangement/"+a_id+"/content/"+c_id+"/changeState",function(d){
+          J.show(t1+"成功。");
+          obj.attr("data-open",(1-state));
+          obj.toggleClass("bg-r").child(1).txt(t2);
+          obj.parent().toggleClass("lock");
+        },true);
       }
     </script>
     

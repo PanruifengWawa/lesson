@@ -90,22 +90,22 @@
           <div class="c-wrapper page-item clearfix">\
             $(each){\
               <div class="course-item" style="background-image:url(\'d{$each.imgSrc}d\')" b-callback="setClick(this,d{$each.state}d,\'code_detail.html?id=d{$each.courseId}d_d{$each.name}d\')">\
-                <div class="course-intro d{($each.state==1)?"":"red"}d">\
+                <div class="course-intro">\
                   <div>d{$each.name}d</div>\
                 </div>\
               </div>\
             }$\
           </div>\
         </div>\
-      </div>';
+      </div>';//<div class="course-intro d{($each.state==1)?"":"red"}d">\
     }
     function setClick(obj,state,url){
       obj.clk(function(){
-        if(state==0){
-            J.showWait("该课程处于结课状态，无法使用激活码功能\n若要使用该课程激活码，请先将此课程开课","warn")
-        }else{
+        //if(state==0){
+        //    J.showWait("该课程处于结课状态，无法使用激活码功能\n若要使用该课程激活码，请先将此课程开课","warn")
+        //}else{
           J.jump(url);
-        }
+        //}
       });
     }
     function getTypeInfo(type){

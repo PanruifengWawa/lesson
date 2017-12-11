@@ -113,3 +113,27 @@
   color:rgb(24,131,22)!important;
   font-weight:bold;
 }
+.a-title{
+  position: absolute;
+  width: 100%;
+  top: 10px;
+  left: 0;
+}
+.add-box{
+  padding: 10px;
+  padding-top:50px;
+  width: 70%;
+  left:15%;
+  margin:0;
+}
+.image-div{
+  height: 100%;
+  background-image: url('assets/images/t_photo.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  cursor:zoom-out;
+}
+.zoom{
+  cursor:zoom-in;
+}

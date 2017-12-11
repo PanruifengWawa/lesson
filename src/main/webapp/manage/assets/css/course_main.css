@@ -135,16 +135,25 @@
   color:rgb(68,171,73);
 }
 .cm-item{
+  border-radius: 3px;
   position: relative;
-  height: 60px;
+  height: 70px;
   margin: 10px 0;
   padding: 5px;
   padding-top: 4px;
   border: 1px solid #ccc;
   cursor:pointer;
+  transition:border-color .3s linear;
+  -webkit-transition:border-color .3s linear;
+  -moz-transition:border-color .3s linear;
+  -ms-transition:border-color .3s linear;
+}
+.cm-item.lock{
+  border: 1px solid rgb(250,100,100);
 }
 .cm-item img{
   position:absolute;
+  margin-top:5px;
   height:50px;
   width:50px;
 }
@@ -152,10 +161,20 @@
   padding: 0 70px 0 60px;
 }
 .cm-item .text div{
+  border-radius: 3px;
   background-color:#eee;
-  height: 50px;
-  line-height: 50px;
+  height: 60px;
+  line-height: 25px;
   padding-left: 15px;
+  padding-top:17px;
+  overflow-y:auto;
+  transition:background-color .3s linear;
+  -webkit-transition:background-color .3s linear;
+  -moz-transition:background-color .3s linear;
+  -ms-transition:background-color .3s linear;
+}
+.cm-item.lock .text div{
+  background-color: rgba(250,100,100,.5);
 }
 .cm-item .c-btn{
   position: absolute;
@@ -163,11 +182,19 @@
   width: 60px;
   top: -1px;
   text-align: center;
-  height: 50px;
-  line-height: 50px;
+  height: 30px;
+  line-height: 30px;
+  transition:background-color .3s linear;
+  -webkit-transition:background-color .3s linear;
+  -moz-transition:background-color .3s linear;
+  -ms-transition:background-color .3s linear;
 }
-
-
+.cm-item .c-btn.open{
+  top:30px;
+}
+.pl-none{
+  padding-left:0!important;
+}
 /*course-detail*/
 .tool-box{
   border-radius:10px;

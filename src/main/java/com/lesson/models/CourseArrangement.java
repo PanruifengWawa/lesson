@@ -22,10 +22,19 @@ public class CourseArrangement {
 	private String name;
 	private Long courseId;
 	private Integer state;
+	private Integer arrangementOrder;
 	private List<CourseContentSub> courseContent;
 	
 	
 	
+	@Basic
+	@Column(name = "arrangement_order")
+	public Integer getArrangementOrder() {
+		return arrangementOrder;
+	}
+	public void setArrangementOrder(Integer arrangementOrder) {
+		this.arrangementOrder = arrangementOrder;
+	}
 	@Basic
 	@Column(name = "state")
 	public Integer getState() {
@@ -73,7 +82,7 @@ public class CourseArrangement {
 	
 	@OneToMany
 	@JoinColumn(name="course_arrangement_id")
-	@OrderBy(value = "course_content_id asc")  
+	@OrderBy(value = "content_order asc,course_content_id asc")  
 	public List<CourseContentSub> getCourseContent() {
 		return courseContent;
 	}

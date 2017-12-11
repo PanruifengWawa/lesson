@@ -48,8 +48,7 @@
         </div>
         <div class="table" id="codeTable" b-loop="code" b-callback="addHead()">
           <div class="t-i">
-            <div class="t-ii">{{each.courseCodeStr.substring(0,24)}}</div>
-            <div class="t-ii">{{each.courseCodeStr.substring(24)}}</div>
+            <div class="t-ii">{{each.courseCodeStr}}</div>
             <div class="t-ii {{(each.isUsed==1)?'fc-r':'fc-g'}}">{{(each.isUsed==1)?'已使用':'未使用'}}</div>
             <div class="t-ii">{{getDateByStamp(each.useDate)}}</div>
             <div class="t-ii pointer" b-callback="setClick(this,{{each.isUsed}},{{each.userId}})">{{(each.isUsed==1)?each.userId:'无'}}</div>
@@ -148,7 +147,7 @@
       var totalPage;
       J.ready(function(){
         getCodeList();
-        J.id("listTitle").txt("'"+name+"'的激活码列表")
+        J.id("listTitle").txt("'"+name+"'的激活码列表");
       });
       function getCodeList(){
         J.id("codeTable").empty();
@@ -180,7 +179,7 @@
             getCodeList();
             var html="";
             d.each(function(code){
-              html+=("激活码："+code.substring(0,24)+" &nbsp; 密码："+code.substring(24)+"\n")
+              html+=("激活码："+code+"\n");
             });
             J.id("codeViewArea").html(html);
           })
@@ -189,7 +188,6 @@
       function addHead(){
         J.id("codeTable").prepend(J.new("div.t-i").html('\
             <div class="t-ii">激活码</div>\
-            <div class="t-ii">密码</div>\
             <div class="t-ii">使用情况</div>\
             <div class="t-ii">使用日期</div>\
             <div class="t-ii">使用者ID</div>\
@@ -199,6 +197,11 @@
         J.show("按 Ctrl + A 可以全选");
       }
       function setClick(obj,isUsed,userId){
+        if(isUsed==1){
+          obj.tip('查看用户详情');
+        }else{
+          obj.css("cursor","auto");
+        }
         obj.clk(function(){
           if(isUsed==1){
             J.showWait("正在加载用户详情...");
@@ -212,7 +215,7 @@
               showAdd("用户详情","userInfo");
             });
           }else{
-            J.show("该激活码没有被使用。","info")
+            J.show("该激活码没有被使用。","info");
           }
         });
       }

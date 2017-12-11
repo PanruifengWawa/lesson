@@ -15,6 +15,15 @@
     <link rel="stylesheet" type="text/css" href="assets/css/regist.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/add_book.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/mobi.css"/>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?074a3ae03c67c779cac33a2a40e5d465";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </head>
   <body class="common">
     <div id="forBg"></div>
@@ -23,7 +32,7 @@
       <div id="registTitle" class="fz-2 fc-g"><img class="plus" src="assets/images/add.png" alt="" /> 添加已读绘本</div>
       <div class="clearfix regist-item relative upload-w">
         <div class="c-btn upload-book" onclick="this.next().click()">点击上传绘本封面</div>
-        <input type="file" id="file" accept="image/*" capture="camera" name="file" class="hide" onchange="uploadCover()"/>
+        <input type="file" id="file" accept="image/*" name="file" class="hide" onchange="uploadCover()"/>
         <img src="assets/images/read_book.png" jet-name="bookImgSrc" jet-get="attr:src" jet-set="attr:src" class="ub-img" alt="" />
       </div>
       <div class="clearfix regist-item">
@@ -75,9 +84,7 @@
     function addBookRequest(data,obj){
       postData(data,"/book",function(){
         J.show("添加成功");
-        obj.clear();
-        J.jetName("bookImgSrc").attr("src",def);
-        J.id("file").prev().txt("点击上传绘本封面");
+        setTimeout("J.back()",500);
       })
     }
     </script>

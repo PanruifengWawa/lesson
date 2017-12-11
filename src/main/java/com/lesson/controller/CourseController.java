@@ -508,6 +508,7 @@ public class CourseController {
 	* @apiParam {Long} courseId * 课程id（必须）
 	* @apiParam {String} name * 课程安排标题（必须）
 	* @apiParam {String} imgSrc * 课程安排封面（必须）
+	* @apiParam {Integer} arrangementOrder * 课程安排顺序编号（非必须，若不传，默认为0）
 	*
 	* @apiSuccessExample {json} Success-Response:
 	* 	HTTP/1.1 200 ok
@@ -641,6 +642,7 @@ public class CourseController {
 	* @apiParam {Long} courseArrangementId * 课程安排id（必须）
 	* @apiParam {String} name * 课程安排名称（非必须）
 	* @apiParam {String} imgSrc * 课程安排封面（非必须）
+	* @apiParam {Integer} arrangementOrder * 课程安排顺序编号（非必须）
 	*
 	* @apiSuccessExample {json} Success-Response:
 	* 	HTTP/1.1 200 ok
@@ -867,6 +869,7 @@ public class CourseController {
 	* @apiParam {String} content * 课程内容（必须）
 	* @apiParam {String} bookName * 课程内容对应的书籍（必须）
 	* @apiParam {String} bookImgSrc * 课程内容对应的书籍封面（必须）
+	* @apiParam {Integer} contentOrder * 课程内容顺序（非必须，默认为0）
 	* 
 	*
 	* @apiSuccessExample {json} Success-Response:
@@ -1045,6 +1048,7 @@ public class CourseController {
 	* @apiParam {String} name * 课程内容标题（非必须）
 	* @apiParam {String} subName * 课程内容副标题（非必须）
 	* @apiParam {String} content * 课程内容（非必须）
+	* @apiParam {Integer} contentOrder * 课程内容顺序（非必须，默认为0）
 	* 
 	*
 	* @apiSuccessExample {json} Success-Response:
@@ -1417,6 +1421,54 @@ public class CourseController {
 		return courseCodeService.isBought(token.getUserId());
 	}
 	
+	
+	
+	/**
+	* @api {post} api/course/{courseId}/copy 复制课程
+	* @apiName course_copycourse
+	* @apiGroup course
+	* 
+	* @apiHeader {String} token 身份凭证
+	*
+	*
+	* @apiSuccessExample {json} Success-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+  	*		"callStatus": "SUCCEED",
+  	*		"errorCode": "成功",
+  	*		"data": true,
+  	*		"token": null,
+  	*		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	*
+	* @apiSuccessExample {json} Error-Response:
+	* 	HTTP/1.1 200 ok
+	* 	{
+	*  		"callStatus": "FAILED",
+	*  		"errorCode": "权限错误",
+	*  		"data": "用户未登录",
+	*  		"token": null
+	*  		"numberPerPage": 0,
+	*  		"currentPage": 0,
+	*  		"totalNumber": 0,
+	*  		"totalPage": 0
+	*	}
+	**/
+	@RequestMapping(value = "/{courseId}/copy", method = RequestMethod.POST)
+	@ResponseBody
+	public DataWrapper<Void> copyCourse(
+			@PathVariable Long courseId,
+			HttpServletRequest request
+			) {
+		Token token = tokenRepository.findByTokenStr(request.getHeader("token"));
+		UserType[] userTypes = {UserType.Admin};
+		CheckUser.checkUser(token, userTypes);
+		
+		return courseService.copyCourse(courseId);
+	}
 	
 
 }

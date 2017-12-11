@@ -43,10 +43,14 @@
       function login(){
         J.id("loginBox").validate(function(data,obj){
           postData(data,"/user/login",function(d,data){
-            J.show("登录成功！");
-            setCookie("token",data.token);
-            setCookie("adminName",d.phone);
-            delay('J.jump("course_main.html")');
+            if(d.type==0){
+              J.show("登录成功！");
+              setCookie("token",data.token);
+              setCookie("adminName",d.phone);
+              delay('J.jump("course_main.html")');
+            }else{
+              J.show("账号不存在！",'error');
+            }
           },false);
         });
       }

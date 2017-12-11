@@ -1,7 +1,22 @@
-/*bql.js
-  by theajack
-  http://www.theajack.com/bql/
-*/
+/*<style>
+  [b-bind]{
+    display:none;
+  }
+  [b-loop]{
+    display:none;
+  }
+</style>*/
+
+//添加了 在b-loop$index
+//${}$
+// b-bind="name;data"
+
+/* $each $eachIndex $ei  d{js表达式}d f{return的js语句}f
+$(variable){ 
+}$*/
+
+//一般元素的b-callback
+
 (function(){
   J.ready(function(){
     BQL.init();

@@ -1,5 +1,147 @@
+var show_img,pinchZoom,zoomIndex,useDrag=true;
+J.ready(function(){
+  J.id("zoomImageCover").clk("closeZoom()");
+});
+function initPinch(){
+  pinchZoom=new RTP.PinchZoom($(J.class("pinch-zoom")), {});
+  J.class("zoom-img").clk("bindZoom(this)");
+}
+function bindZoom(obj){
+  show_img=obj;
+  var list=J.class("zoom-img");
+  for(var k=0;k<list.length;k++){
+    if(list[k]==obj){
+      zoomIndex=k;
+      break;
+    }
+  }
+  J.id("zoomImage").removeAttr("style").attr("src",obj.attr("src"));
+  J.id("zoomImageCover").fadeIn();
+  checkMiddle();
+}
+function checkMiddle(obj,call){
+  var img = J.checkArg(obj,J.id("zoomImage"))
+  setTimeout(function(){
+    var rate=img.height/img.width;
+    var height=rate*(J.width()-10);
+    var top=(J.height()-height)/2;
+    if(top<0){
+      var width=(J.height()-10)/rate;
+      J.class("pinch-zoom-container").css("margin-top","0px");
+      J.id("zoomImage").css({
+        "height":(J.height()-10)+"px",
+        "width":width+"px",
+        "margin":"5px "+(J.width()-width)/2+"px"
+      });
+    }else{
+      J.class("pinch-zoom-container").css("margin-top",top+"px");
+      J.id("zoomImage").css({
+        "height":(J.width()-10)*rate+"px",
+        "width":(J.width()-10)+"px",
+        "margin":"0 5px"
+      });
+    }
+    if(call!=undefined){
+      call();
+    }
+  },50)
+}
+function closeZoom(){
+  J.id('zoomImageCover').fadeOut(function(){
+    pinchZoom.reset();
+  });
+  show_img=null;
+}
+function changeImage(dirc){
+  var list=J.class("zoom-img");
+  var left;
+  var img=J.id("zoomImage");
+  var img_rep=J.id("zoomImageRep");
+  var width=J.width();
+  if(dirc=="next"){
+    if(zoomIndex>=list.length-1){
+      zoomIndex=0;
+    }else{
+      zoomIndex++;
+    }
+    left='-'+width+'px';
+    img_rep.css('left',width+'px');
+  }else if(dirc=="last"){
+    if(zoomIndex<=0){
+      zoomIndex=list.length-1;
+    }else{
+      zoomIndex--;
+    }
+    left=width+'px';
+    img_rep.css('left','-'+width+'px');
+  }
+  show_img=list[zoomIndex];
+  img_rep.attr("src",show_img.attr("src")).css('visibility','visible');
+  countRep();
+  if(pinchZoom.zoomFactor==1){
+    animateImg(img,img_rep,left);
+  }else{
+    var i=0;
+    var max=300,times=15,time=max/times;
+    var f=(pinchZoom.zoomFactor-1)/times;
+    var x=(pinchZoom.offset.x)/times;
+    var y=(pinchZoom.offset.y)/times;
+    var img_t=setInterval(function(){
+      i+=time;
+      if(i<=max){
+        pinchZoom.zoomFactor-=f;
+        pinchZoom.offset.x-=x;
+        pinchZoom.offset.y-=y;
+        pinchZoom.update();
+      }else{
+        clearInterval(img_t);
+        pinchZoom.reset();
+        animateImg(img,img_rep,left);
+      }
+    },time);
+  }
+  
+}
+function animateImg(img,img_rep,left){
+  useDrag=false;
+  $(img).animate({left:left});
+  $(img_rep).animate({left:"5px"},function(){
+    //J.id("zoomImage").removeAttr("style").attr("src",obj.attr("src"));
+    checkMiddle(show_img,function(){
+      img.attr("src",show_img.attr("src")).css('left','0');
+      img_rep.css('visibility','hidden');
+      useDrag=true;
+    });
+  });
+}
+function countRep(){
+  var _top=J.class("pinch-zoom-container").css("margin-top");
+  var value=parseFloat(_top.substring(0,_top.length-2));
+  var img_rep=J.id("zoomImageRep");
+  
+  
+  var rate=show_img.height/show_img.width;
+    var height=rate*(J.width()-10);
+    var top=(J.height()-height)/2;
+    if(top<0){
+      var width=(J.height()-10)/rate;
+      //J.class("pinch-zoom-container").css("margin-top","0px");
+      img_rep.css({
+        "height":(J.height()-10)+"px",
+        "width":width+"px",
+        "top":(-value+5)+"px"
+      });
+    }else{
+      img_rep.css({
+        "height":(J.width()-10)*rate+"px",
+        "width":(J.width()-10)+"px",
+        "top":(-value+top)+"px"
+      });
+    }
+  
+}
 (function () {
-    'use strict';
+    'use strict';var dirc="",i=0;
     var definePinchZoom = function ($) {
 
         /**
@@ -49,6 +191,18 @@
                 dragEndEventName: 'pz_dragend',
                 doubleTapEventName: 'pz_doubletap'
             },
+            
+            reset:function(){
+              this.zoomFactor = 1;
+              this.lastScale = 1;
+              this.offset = {
+                  x: 0,
+                  y: 0
+              };
+              this.options = $.extend({}, this.defaults, {});
+              this.update();
+            },
+            
 
             /**
              * Event handler for 'dragstart'
@@ -148,6 +302,7 @@
              * @param offset
              * @return {Object} the sanitized offset
              */
+             
             sanitizeOffset: function (offset) {
                 var maxX = (this.zoomFactor - 1) * this.getContainerX(),
                     maxY = (this.zoomFactor - 1) * this.getContainerY(),
@@ -155,7 +310,15 @@
                     maxOffsetY = Math.max(maxY, 0),
                     minOffsetX = Math.min(maxX, 0),
                     minOffsetY = Math.min(maxY, 0);
-
+                    
+                if(offset.x<=0){
+                  dirc="last";
+                }else if(offset.x>=maxOffsetX){
+                  dirc="next";
+                }else{
+                  dirc="";
+                }
+                
                 return {
                     x: Math.min(Math.max(offset.x, minOffsetX), maxOffsetX),
                     y: Math.min(Math.max(offset.y, minOffsetY), maxOffsetY)
@@ -656,7 +819,7 @@
 
                     if (time - lastTouchStart < 300) {
                         cancelEvent(event);
-
+                        
                         target.handleDoubleTap(event);
                         switch (interaction) {
                             case "zoom":
@@ -675,14 +838,20 @@
                 firstMove = true;
 
             el.addEventListener('touchstart', function (event) {
+              if(useDrag){
+                this.lastTouch=event.touches[0];//加的
+                this.lasttransformx=this.child(0).css("transform").split(",")[4];
+                dirc="";
                 if(target.enabled) {
                     firstMove = true;
                     fingers = event.touches.length;
                     detectDoubleTap(event);
                 }
+              }
             });
 
             el.addEventListener('touchmove', function (event) {
+              if(useDrag){
                 if(target.enabled) {
                     if (firstMove) {
                         updateInteraction(event);
@@ -702,18 +871,30 @@
                         if (interaction) {
                             cancelEvent(event);
                             target.update();
-                        }
+                            dirc="";
+                        }else{//加的
+                          var diff=this.lastTouch.clientX-event.touches[0].clientX;
+                          dirc=(diff>0)?"next":"last";
+                        }//加的
                     }
 
                     firstMove = false;
                 }
+              }
             });
 
             el.addEventListener('touchend', function (event) {
+              if(useDrag){
                 if(target.enabled) {
                     fingers = event.touches.length;
                     updateInteraction(event);
                 }
+                if(this.lasttransformx==this.child(0).css("transform").split(",")[4]){
+                  if(dirc!=""){
+                    changeImage(dirc);
+                  }
+                }
+              }
             });
         };
 

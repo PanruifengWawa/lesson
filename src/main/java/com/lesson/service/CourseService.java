@@ -2,6 +2,8 @@ package com.lesson.service;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import com.lesson.models.Course;
 import com.lesson.models.CourseArrangement;
 import com.lesson.models.CourseContent;
@@ -56,5 +58,8 @@ public interface CourseService {
 	DataWrapper<CourseContent> getCourseContentDetails(Long courseId, Long courseContentId, Token token);
 	
 	DataWrapper<Void> changeContentState(Long courseContentId, Integer state);
+	
+	@Transactional
+	DataWrapper<Void> copyCourse(Long courseId);
 
 }

@@ -17,7 +17,7 @@
 #achWrapper,.book-item{
   position: relative;
   padding-left: 70px;
-  padding-right: 10px;
+  padding-right: 5px;
   text-align: left;
   border-bottom:1px solid rgba(255,255,255,.5);
   margin:8px 0;
@@ -74,19 +74,35 @@
 .m-intro-item{
   margin:3px;
 }
+.delete-img{
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  opacity: .7;
+  height: 17px;
+}
+.book-index{
+  position: absolute;
+  top: 0;
+  right: 5px;
+  background-color: rgba(155,155,155,.8);
+  font-size: 16px;
+  padding: 0px 5px;
+  border-radius: 0 10px 0 10px;
+}
 .ach-btn{
   color: #000;
   text-shadow: none;
-  width: 160px;
+  width: 130px;
   position: relative;
-  padding-left: 15px;
+  padding-left: 20px!important;
   margin: 5px;
   float:right;
 }
 .ach-btn img{
   height: 100%;
   position: absolute;
-  left:5px;
+  left:2px;
 }
 .info-text{
   font-size: 22px;
@@ -97,4 +113,8 @@
 .info-btn{
   width:100px;
   margin:0 auto;
+}
+.book-store{
+  float: left;
+  padding: 0;
 }

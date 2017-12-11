@@ -20,10 +20,20 @@ public class CourseContent {
 	private String bookName;
 	private String bookImgSrc;
 	private Integer state;
+	private Integer contentOrder;
 	
 	
 	
 	
+	
+	@Basic
+	@Column(name = "content_order")
+	public Integer getContentOrder() {
+		return contentOrder;
+	}
+	public void setContentOrder(Integer contentOrder) {
+		this.contentOrder = contentOrder;
+	}
 	@Basic
 	@Column(name = "state")
 	public Integer getState() {

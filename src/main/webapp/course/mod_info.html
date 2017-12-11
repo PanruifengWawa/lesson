@@ -15,6 +15,15 @@
     <link rel="stylesheet" type="text/css" href="assets/css/regist.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/mod_info.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/mobi.css"/>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?074a3ae03c67c779cac33a2a40e5d465";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </head>
   <body>
     <div id="forBg"></div>
@@ -23,7 +32,7 @@
         <img class="decr-img" src="assets/images/crown.png" alt="" />
         <div class="mod-title first fz-3 fc-o bold">用户信息</div>
         <div class="user-photo u-photo" onclick="J.id('file').click()"></div>
-        <input type="file" id="file" accept="image/*" capture="camera" name="file" class="hide" onchange="uploadHeadSrc()"/>
+        <input type="file" id="file" accept="image/*" name="file" class="hide" onchange="uploadHeadSrc()"/>
         <div class="clearfix regist-item relative">
           <div class="regist-part-l"><span class="fz-3 fc-w l-s">手机号码</span></div>
           <div class="regist-part-r"><input type="text" class="c-input" disabled jet-name="phone"/></div>

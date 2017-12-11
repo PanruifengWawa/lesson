@@ -23,7 +23,6 @@ p{
   background-repeat:no-repeat;
   background-size:contain;
   display:none;
-  max-width:600px;
   left: 0;
 }
 .cover-close{
@@ -67,7 +66,7 @@ div.page{
 }
 .pinch-zoom img{
 	width: 98%;
-  margin: 0 1%;
+  /* margin: 0 1%; */
   border-radius: 5px;
 }
 div.pinch-zoom {

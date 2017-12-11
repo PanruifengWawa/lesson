@@ -14,6 +14,15 @@
     <link rel="stylesheet" type="text/css" href="assets/css/common.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/course_list.css"/>
     <link rel="stylesheet" type="text/css" href="assets/css/course_detail.css"/>
+    <script>
+      var _hmt = _hmt || [];
+      (function() {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?074a3ae03c67c779cac33a2a40e5d465";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+      })();
+    </script>
   </head>
   <body class="common" jet-form="content">
     <div id="forBg"></div>
@@ -94,14 +103,15 @@
       
     </div>
     
-    
+    <audio src="" id="playAudio"></audio>
     <div id="zoomImageCover" class="cover display-none">
       <div class="page">
         <div class="pinch-zoom">
           <img id="zoomImage" src=""/>
+          <img id="zoomImageRep" class="" src="assets/images/audio.png"/>
         </div>
       </div>
-      <img class="cover-close" src="assets/images/confirm_cancel.png" alt=""  onclick="this.parent().fadeOut()"/>
+      <!-- <img class="cover-close" src="assets/images/confirm_cancel.png" alt=""  onclick="closeZoom()"/> -->
     </div>
     
     <div id="footer">
@@ -119,52 +129,30 @@
       var a_id=params[1];
       var c_id=params[2];
       var type=params[3];
+      var isFree=params[4];
+      var audioIndex=-1;
+      var audios=[];
+      var playAudio=J.id('playAudio');
       J.ready(function(){
+        if(isFree!=0){
+          setVisit();
+        }
         loadContent();
         if(visit()){
           J.tag("title").txt("1000Books体验课");
         }
         J.id("title").findClass("decr-img").attr("src",getTypeImg(type));
-        J.id("zoomImageCover").clk("J.id('zoomImageCover').fadeOut()");
+        
       });
       function loadContent(){
         getData(null,"/course/"+id+"/arrangement/"+a_id+"/content/"+c_id,function(d){
           J.jetForm("content").set(d);
-          
-          J.class("cl-item").attr("onclick","toggleCourse(this)")
-          J.class("l-img").attr("onclick","showPhoto(this)")
+          J.class("cl-item").attr("onclick","toggleCourse(this)");
+          J.class("l-img").addClass('zoom-img');
           initAudio();
-          $('div.pinch-zoom').each(function () {
-            new RTP.PinchZoom($(this), {});
-          });
-          J.id("courseList").findClass("l-img").clk("bindZoom(this)");
+          initPinch();
           checkHeadImgCenter();
         });
-      }
-      
-      function bindZoom(obj){
-        J.id("zoomImage").attr("src",obj.attr("src"));
-        var rate=obj.hei()/obj.wid();
-        var height=rate*J.width();
-        var top=(J.height()-height)/2;
-        if(top<0){
-          //alert(1)
-          var width=J.height()/rate;
-          J.class("pinch-zoom-container").css("margin-top","0px");
-          J.id("zoomImage").css({
-            "height":(J.height()-10)+"px",
-            "width":width+"px",
-            "margin":"5px "+(J.width()-width)/2+"px"
-          });
-        }else{
-          J.class("pinch-zoom-container").css("margin-top",top+"px");
-          J.id("zoomImage").css({
-            "height":"100%",
-            "width":"98%",
-            "margin":"0 1%"
-          });
-        }
-        J.id("zoomImageCover").fadeIn();
       }
       function toggleCourse(obj){
         var n=obj.next();
@@ -172,107 +160,118 @@
           $(n).slideToggle();
         }
       }
-      function showPhoto(obj){
-        J.class("cover").css("background-image","url('"+obj.attr("src")+"')").fadeIn();
-      }
       function initAudio(item){
-        if(item==undefined){
-          var list=J.tag("audio");
-          if(list!=undefined&&list.length>0){
-            list.each(function(item){
-              initAudio(item)
-            });
-          }
-        }else{
-          initAudioTime(item);
-          if(item.onloadedmetadata===undefined){
-            item._t=setInterval(function(){
-              inter(item);
-            },100);
-          }else{
-            item.onloadedmetadata=function(){initAudioTime(item)}
-          }
+        var list=J.tag("audio");
+        if(list!=undefined&&list.length>0){
+          list.each(function(item){
+            if(item.attr('id')!='playAudio')
+              item.onloadedmetadata=initAudioTime;
+          });
         }
-      }var timer,t;
-      var update=true;
-      function inter(item){
-        if(item.duration.toString()!="NaN"){
-          initAudioTime(item);
-          clearInterval(item._t);
-          item._t=undefined;
-        }
+        J.tag("audio").each(function(a){
+          if(a.attr('id')!='playAudio')
+            audios.push(a.src);
+        });
       }
+      var t;
       function toggleAudio(obj){
-        var audio=obj.findTag("audio");
-        if(audio.paused){
-          inactiveAudio();
-          audio.addClass("active").play();
-          obj.findClass("audio-img").twinkle();
-          t=setInterval(function(){
-            resetAutoTime.call(audio);
-          },1000);
+        var same=false;
+        var list=J.class("audio").toArray();
+        for(var k=0;k<list.length;k++){
+          if(list[k]==obj){
+            if(audioIndex==k){
+              same=true;
+            }else{
+              audioIndex=k;
+            }
+            break;
+          }
+        }
+        if(same){
+          if(playAudio.paused){
+            playAudio.play();
+            obj.findClass("audio-img").twinkle();
+            t=setInterval(function(){
+              resetAutoTime.call(playAudio,obj);
+            },1000);
+          }else{
+            playAudio.pause();
+            obj.findClass("audio-img").stopTwinkle(true);
+            clearInterval(t);
+          }
         }else{
+          playNextAudio(obj);
+        }
+      }
+      function playNextAudio(obj){
+        playAudio.src=audios[audioIndex];
+        playAudio.play();
+        var active=J.select(".audio.active");
+        if(active.exist()){
+          active.removeClass('active').findClass("audio-cur").txt("0:00");
+          active.findClass("audio-img").stopTwinkle(true);
           clearInterval(t);
-          audio.removeClass("active").pause();
-          obj.findClass("audio-img").stopTwinkle(true);
         }
+        obj.addClass('active');
+        obj.findClass("audio-img").twinkle();
+        t=setInterval(function(){
+          resetAutoTime.call(playAudio,obj);
+        },1000);
       }
-      function inactiveAudio(){
-        var obj=J.select("audio.active");
-        if(obj.length!=0){
-          obj.removeClass("active").pause();
-          obj.currentTime=0;
-          obj.parent().findClass("audio-cur").txt("0:00");
-          obj.parent().findClass("audio-img").stopTwinkle(true);
-        }
-        //onloadedmetadata ="initAudioTime(this)" timeupdate="resetAutoTime(this)"
-      }
-      function initAudioTime(obj){
-        var time=obj.duration;
-        if(time.toString()=="NaN"){
-          time=0;
+      function initAudioTime(){
+        var time=this.duration;
+        if(isNaN(time)){
+          time=0; 
         }
         var min=Math.floor(time/60);
         var sec=Math.round(time%60);
         if(sec<10){
           sec="0"+sec;
         }
-        obj.parent().findClass("audio-all").txt(min+":"+sec);
+        this.parent().findClass("audio-all").txt(min+":"+sec);
         if(min<10){
-          obj.parent().findClass("audio-cur").txt("0:00");
+          this.parent().findClass("audio-cur").txt("0:00");
         }else{
-          obj.parent().findClass("audio-cur").txt("00:00");
+          this.parent().findClass("audio-cur").txt("00:00");
         }
-        //if(obj.ontimeupdate!==undefined){
-        //  obj.ontimeupdate = resetAutoTime;
-        //}else{
-          update=false;
-        //}
       }
-      function resetAutoTime(){
+      
+      function resetAutoTime(obj){
         var time=this.currentTime;
-        if(time+1>=this.duration){
-          this.parent().findClass("audio-img").stopTwinkle(true);
-        }
-        var min=Math.floor(time/60);
-        var sec=Math.round(time%60);
-        if(sec<10){
-          sec="0"+sec;
-        }
-        if(sec.toString()=="NaN"){
-          sec="00";
-        }
-        this.parent().findClass("audio-cur").txt(min+":"+sec);
+        if(time>=this.duration){
+          //this.parent().findClass("audio-img").stopTwinkle(true);
+          clearInterval(t);
+          var list=J.class("audio").toArray();
+          list[audioIndex].findClass("audio-cur").txt("0:00");
+          list[audioIndex].findClass("audio-img").stopTwinkle(true);
+          if(audioIndex>=list.length-1){
+            audioIndex=0;
+          }else{
+            audioIndex++;
+          }
+          playNextAudio(list[audioIndex]);
+          J.show("正在自动播放下一音频...");
+        }else{
+          var min=Math.floor(time/60);
+          var sec=Math.round(time%60);
+          if(sec<10){
+            sec="0"+sec;
+          }
+          if(sec.toString()=="NaN"){
+            sec="00";
+          }
+          obj.findClass("audio-cur").txt(min+":"+sec);
         
-        if(this.data("set_d")!=true){
-          this.data("set_d",true);
           time=this.duration;
           if(time.toString()=="NaN"){
-            time=60;
+            time=0;
           }
           var min=Math.floor(time/60);
           var sec=Math.round(time%60);
-          this.parent().findClass("audio-all").txt(min+":"+sec);
+          if(sec<10){
+            sec="0"+sec;
+          }
+          obj.findClass("audio-all").txt(min+":"+sec);
         }
       }
       function getTypeImg(type){
@@ -294,6 +293,12 @@
           }
         });
       }
+      window.onresize=function(){
+        checkForBg();
+        if(show_img!=null){
+          bindZoom(show_img);
+        }
+      };
     </script>
   </body>
 </html>

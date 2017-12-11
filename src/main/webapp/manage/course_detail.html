@@ -327,7 +327,6 @@
     <script type="text/javascript" src="assets/js/jetter.min.js"></script>
     <script type="text/javascript" src="assets/js/bql.js"></script>
     <script type="text/javascript" src="assets/js/common.js"></script>
-    <script type="text/javascript" src="assets/js/login.js"></script>
     <script type="text/javascript">
       
       var id=urlParam().id.split('_')[0];
@@ -344,8 +343,21 @@
           resetHtml=J.id("courseList").html();
           J.tag("video").attr("poster",def_img);
           initAudio();
+          J.id("title").findClass("decr-img").attr("src",getTypeImg());
         });
       });
+      function getTypeImg(){
+        var type=J.cookie('type');
+        var img="assets/images/";
+        switch(parseInt(type)){
+          case 3:img+="star.png";break;
+          case 2:img+="moon.png";break;
+          case 1:img+="sun.png";break;
+          case 4:img+="cup.png";break;
+          default:img+="star.png";break;
+        }
+        return img;
+      }
       function initList(){
         J.class("cl-lesson").each(function(item){
           item.after(item.child().allHtml()).remove();
@@ -441,7 +453,7 @@
         var item=J.new("div.cl-l-w.no-border").html(html).append(geneFunw());
         J.id("courseList").append(item,i);
       }
-      function addLong(data,align,needCircle,i){
+      function addLong(data,i){
         var no_c=(data.needCircle=="true")?"":"no-circle";
         var texts=data.text.split("\n");
         var html='<div class="cl-l-item fix m-intro-item bg-w3">';
@@ -457,7 +469,7 @@
       function addImage(data,i){
         var item=J.new("div.cl-l-w.no-border").html('\
                 <div class="cl-l-item iv m-intro-item bg-w3">\
-                  <img class="l-img" src="'+data.src+'" alt="" />\
+                  <img class="l-img zoom-img" src="'+data.src+'" alt="" />\
                 </div>').append(geneFunw());
         J.id("courseList").append(item,i);
       }
@@ -748,6 +760,9 @@
           }
           var min=Math.floor(time/60);
           var sec=Math.round(time%60);
+          if(sec<10){
+            sec="0"+sec;
+          }
           this.parent().findClass("audio-all").txt(min+":"+sec);
         }
       }

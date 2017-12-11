@@ -15,4 +15,6 @@ public interface CourseCodeService {
 	DataWrapper<Void> useCourseCode(String courseCodeStr, Long userId);
 	
 	DataWrapper<Boolean> isBought(Long userId);
+	
+	
 }
